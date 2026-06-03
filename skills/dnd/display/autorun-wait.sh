@@ -15,8 +15,11 @@
 
 DISPLAY_DIR="$(cd "$(dirname "$0")" && pwd)"
 PUSH="${DISPLAY_DIR}/push_stats.py"
-QFILE="${DISPLAY_DIR}/.input_queue"
-SESSION_FILE="${DISPLAY_DIR}/.autorun-session"
+# Writable runtime dir (update-safe) — resolve via paths.py; fall back to data root.
+RT="$(python3 -c "import sys,os;sys.path.insert(0,os.path.join('$DISPLAY_DIR','..','scripts'));from paths import runtime_dir;print(runtime_dir())" 2>/dev/null)"
+[ -z "$RT" ] && { RT="${DND_CAMPAIGN_ROOT:-$HOME/.claude/dnd}/.runtime"; mkdir -p "$RT"; }
+QFILE="${RT}/.input_queue"
+SESSION_FILE="${RT}/.autorun-session"
 
 # ── Invalidate any previous wait loop by writing a new session ID ─────────────
 MY_SESSION="$(python3 -c 'import secrets; print(secrets.token_hex(8))')"
@@ -32,7 +35,7 @@ ddir = '$DISPLAY_DIR'
 sys.path.insert(0, os.path.join(ddir, '..', 'scripts'))
 try:
     from paths import find_campaign
-    camp = open(os.path.join(ddir, '.campaign')).read().strip()
+    camp = open(os.path.join('$RT', '.campaign')).read().strip()
     txt = (find_campaign(camp) / 'state.md').read_text(errors='replace')
     m = re.search(r'autorun_interval:\s*(\d+)', txt)
     print(int(m.group(1)) if m else 60)
@@ -78,9 +81,9 @@ if [ -n "$AUTORUN" ]; then
 import ssl, urllib.request, os
 try:
     ddir = '$DISPLAY_DIR'
-    scheme_file = os.path.join(ddir, '.scheme')
+    scheme_file = os.path.join(ddir, '.scheme')   # launch marker → code dir
     scheme = open(scheme_file).read().strip() if os.path.exists(scheme_file) else 'http'
-    token = open(os.path.join(ddir, '.token')).read().strip()
+    token = open(os.path.join('$RT', '.token')).read().strip()   # runtime dir
     ctx = None
     if scheme == 'https':
         ctx = ssl.create_default_context(); ctx.check_hostname=False; ctx.verify_mode=ssl.CERT_NONE

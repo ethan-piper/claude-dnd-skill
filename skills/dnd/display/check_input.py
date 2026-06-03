@@ -17,7 +17,9 @@ One line per character. Same format as autorun-wait.sh output.
 import os
 import sys
 
-QUEUE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".input_queue")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from runtime_paths import rt          # writable runtime dir (update-safe)
+QUEUE_FILE = rt(".input_queue")
 
 try:
     if os.path.exists(QUEUE_FILE):

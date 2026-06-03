@@ -26,12 +26,13 @@ import re
 import subprocess
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "scripts"))
-from paths import find_campaign as _find_campaign, skill_root as _skill_root
+from paths import find_campaign as _find_campaign, skill_root as _skill_root, runtime_dir as _runtime_dir
 
 BASE      = _skill_root()
-LOCK_FILE = BASE / "display" / ".help-lock"
-LOG_FILE  = BASE / "display" / "text_log.json"
-SEND_PY   = BASE / "display" / "send.py"
+_RT       = _runtime_dir()
+LOCK_FILE = _RT / ".help-lock"            # runtime state → update-safe dir
+LOG_FILE  = _RT / "text_log.json"         # runtime state → update-safe dir
+SEND_PY   = BASE / "display" / "send.py"  # bundled code → skill dir
 
 # Sections to extract from state.md.
 # Deliberately excludes "## Open Threads & Rumours" and "## Recent Events"

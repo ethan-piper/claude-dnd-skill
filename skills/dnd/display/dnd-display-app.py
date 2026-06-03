@@ -34,12 +34,16 @@ from typing import Optional
 from flask import Flask, Response, request, render_template, jsonify, send_from_directory
 from flask_cors import CORS
 
-# This file lives at <code-root>/display/ — resolve both dirs from its location
-# so paths work in any install mode (plugin, standalone skill, or dev clone).
+# This file lives at <code-root>/display/ — resolve dirs from its location so
+# paths work in any install mode (plugin, standalone skill, or dev clone).
+# Writable runtime state goes to rt() (the update-safe runtime dir), NOT here.
 _HERE         = os.path.dirname(os.path.abspath(__file__))
 _ROOT         = os.path.dirname(_HERE)
-LOG_FILE      = os.path.join(_HERE, "text_log.json")
 SCRIPTS_DIR   = os.path.join(_ROOT, "scripts")
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+from runtime_paths import rt          # resolves <data-root>/.runtime
+LOG_FILE      = rt("text_log.json")
 
 # SRD lookup module — degrades silently if dataset not built
 if SCRIPTS_DIR not in sys.path:
@@ -81,7 +85,7 @@ def _apply_campaign_sfx_languages() -> None:
     if _audio is None:
         return
     try:
-        camp = open(os.path.join(_HERE, ".campaign")).read().strip()
+        camp = open(rt(".campaign")).read().strip()
         if not camp:
             return
         state_md = _find_campaign(camp) / "state.md"
@@ -101,15 +105,15 @@ def _apply_campaign_sfx_languages() -> None:
 
 _apply_campaign_sfx_languages()
 
-HELP_LOCK     = os.path.join(_HERE, ".help-lock")
-CAMP_FILE     = os.path.join(_HERE, ".campaign")
-STATS_FILE    = os.path.join(_HERE, "stats.json")
-TOKEN_FILE    = os.path.join(_HERE, ".token")
-INPUT_FILE    = os.path.join(_HERE, "player_input.json")
-TRIGGER_FILE  = os.path.join(_HERE, ".input_trigger")
-QUEUE_FILE    = os.path.join(_HERE, ".input_queue")
-DEVICES_FILE         = os.path.join(_HERE, ".approved_devices.json")
-PENDING_DEVICES_FILE = os.path.join(_HERE, ".pending_devices.json")
+HELP_LOCK     = rt(".help-lock")
+CAMP_FILE     = rt(".campaign")
+STATS_FILE    = rt("stats.json")
+TOKEN_FILE    = rt(".token")
+INPUT_FILE    = rt("player_input.json")
+TRIGGER_FILE  = rt(".input_trigger")
+QUEUE_FILE    = rt(".input_queue")
+DEVICES_FILE         = rt(".approved_devices.json")
+PENDING_DEVICES_FILE = rt(".pending_devices.json")
 
 # ─── LAN / TLS mode ───────────────────────────────────────────────────────────
 # Pass --lan to bind on 0.0.0.0 and protect write endpoints with a token.
@@ -2533,9 +2537,11 @@ if __name__ == "__main__":
 
     host = "0.0.0.0" if _LAN_MODE else "localhost"
     # TLS — only enabled when --tls is explicitly passed; HTTP is the default.
+    # Certs are runtime state (persist across plugin updates) → rt(); .scheme is a
+    # launch-time marker read by simple shell commands → stays in the code dir.
     _display_dir = os.path.dirname(os.path.abspath(__file__))
-    _cert = os.path.join(_display_dir, "cert.pem")
-    _key  = os.path.join(_display_dir, "key.pem")
+    _cert = rt("cert.pem")
+    _key  = rt("key.pem")
     ssl_ctx = (_cert, _key) if (_TLS_MODE and os.path.exists(_cert) and os.path.exists(_key)) else None
     scheme  = "https" if ssl_ctx else "http"
 

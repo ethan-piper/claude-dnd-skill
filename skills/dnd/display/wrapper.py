@@ -45,12 +45,15 @@ import ssl
 import urllib.request
 
 _HERE          = os.path.dirname(os.path.abspath(__file__))
-TRIGGER_FILE   = os.path.join(_HERE, ".input_trigger")
-QUEUE_FILE     = os.path.join(_HERE, ".input_queue")
-STATS_FILE     = os.path.join(_HERE, "stats.json")
-CAMP_FILE      = os.path.join(_HERE, ".campaign")
-AUDIT_LOG      = os.path.join(_HERE, "input_log.json")
-TOKEN_FILE     = os.path.join(_HERE, ".token")
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
+from runtime_paths import rt          # writable runtime dir (update-safe)
+TRIGGER_FILE   = rt(".input_trigger")
+QUEUE_FILE     = rt(".input_queue")
+STATS_FILE     = rt("stats.json")
+CAMP_FILE      = rt(".campaign")
+AUDIT_LOG      = rt("input_log.json")
+TOKEN_FILE     = rt(".token")
 DISPLAY_URL    = "https://127.0.0.1:5001"
 
 # Self-signed cert — skip verification for localhost

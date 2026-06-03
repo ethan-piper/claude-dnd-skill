@@ -7,7 +7,8 @@ Run this once, or any time your LAN IP changes:
 
     python3 setup_tls.py
 
-Produces cert.pem + key.pem in the same directory.
+Produces cert.pem + key.pem in the writable runtime dir (update-safe), so the
+cert survives plugin updates and devices don't have to re-trust it each time.
 SANs cover: localhost, 127.0.0.1, and the current LAN IP (en0 / en1 / wlan0).
 
 After regenerating, restart the display:
@@ -23,8 +24,10 @@ from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 DISPLAY_DIR = os.path.dirname(os.path.abspath(__file__))
-CERT_FILE   = os.path.join(DISPLAY_DIR, "cert.pem")
-KEY_FILE    = os.path.join(DISPLAY_DIR, "key.pem")
+sys.path.insert(0, DISPLAY_DIR)
+from runtime_paths import rt          # writable runtime dir (update-safe)
+CERT_FILE   = rt("cert.pem")
+KEY_FILE    = rt("key.pem")
 
 
 def _lan_ip() -> Optional[str]:

@@ -10,9 +10,13 @@
 # TLS adds encryption but requires a one-time certificate install on each device.
 
 DISPLAY_DIR="$(cd "$(dirname "$0")" && pwd)"
-LOG="$DISPLAY_DIR/app.log"
-PID_FILE="$DISPLAY_DIR/app.pid"
+LOG="$DISPLAY_DIR/app.log"               # process log — recreated each launch
+PID_FILE="$DISPLAY_DIR/app.pid"          # process pid  — recreated each launch
 CERT_SERVER_PID="$DISPLAY_DIR/.cert-server.pid"
+# Writable runtime dir (update-safe) — TLS certs live here so they survive
+# /plugin update and devices don't have to re-trust them. Resolve via paths.py.
+RT="$(python3 -c "import sys,os;sys.path.insert(0,os.path.join('$DISPLAY_DIR','..','scripts'));from paths import runtime_dir;print(runtime_dir())" 2>/dev/null)"
+[ -z "$RT" ] && { RT="${DND_CAMPAIGN_ROOT:-$HOME/.claude/dnd}/.runtime"; mkdir -p "$RT"; }
 
 # ── Parse flags ───────────────────────────────────────────────────────────────
 LAN_FLAG=""
@@ -40,11 +44,11 @@ fi
 
 # ── TLS: generate cert if missing, then start cert server ────────────────────
 if $TLS_MODE; then
-  if [[ ! -f "$DISPLAY_DIR/cert.pem" || ! -f "$DISPLAY_DIR/key.pem" ]]; then
+  if [[ ! -f "$RT/cert.pem" || ! -f "$RT/key.pem" ]]; then
     echo "Generating self-signed certificate..."
     openssl req -x509 -newkey rsa:2048 \
-      -keyout "$DISPLAY_DIR/key.pem" \
-      -out    "$DISPLAY_DIR/cert.pem" \
+      -keyout "$RT/key.pem" \
+      -out    "$RT/cert.pem" \
       -days 3650 -nodes \
       -subj "/CN=dnd-display" \
       -addext "subjectAltName=IP:${LAN_IP:-127.0.0.1},IP:127.0.0.1" 2>/dev/null \
@@ -52,12 +56,12 @@ if $TLS_MODE; then
     || { echo "Error: openssl not found. Install it or use HTTP mode (remove --tls)."; exit 1; }
   fi
 
-  # Start cert server (plain HTTP on :8080 so devices can download the cert)
+  # Start cert server (plain HTTP on :8080 so devices can download the cert from $RT)
   if [[ -f "$CERT_SERVER_PID" ]]; then
     kill "$(cat "$CERT_SERVER_PID")" 2>/dev/null || true
     rm -f "$CERT_SERVER_PID"
   fi
-  python3 -m http.server 8080 --directory "$DISPLAY_DIR" > /dev/null 2>&1 &
+  python3 -m http.server 8080 --directory "$RT" > /dev/null 2>&1 &
   echo $! > "$CERT_SERVER_PID"
 else
   # HTTP mode: shut down any leftover cert server from a previous TLS session

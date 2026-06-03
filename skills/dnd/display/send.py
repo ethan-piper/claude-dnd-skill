@@ -64,14 +64,17 @@ import time
 import urllib.request
 
 _DISPLAY_DIR = os.path.dirname(os.path.abspath(__file__))
-_SCHEME_FILE = os.path.join(_DISPLAY_DIR, ".scheme")
+if _DISPLAY_DIR not in sys.path:
+    sys.path.insert(0, _DISPLAY_DIR)
+from runtime_paths import rt          # writable runtime dir (update-safe)
+_SCHEME_FILE = os.path.join(_DISPLAY_DIR, ".scheme")   # launch marker → code dir
 _SCHEME = open(_SCHEME_FILE).read().strip() if os.path.exists(_SCHEME_FILE) else "http"
 BASE_URL    = f"{_SCHEME}://localhost:5001"
 FLASK_URL   = f"{BASE_URL}/chunk"
 STATS_URL   = f"{BASE_URL}/stats"
 HEALTH_URL  = f"{BASE_URL}/health"
 DICE_REQ_URL = f"{BASE_URL}/dice-request"
-TOKEN_FILE  = os.path.join(_DISPLAY_DIR, ".token")
+TOKEN_FILE  = rt(".token")
 TIMEOUT     = 8.0
 RETRIES     = 1                # one retry on timeout/connection error
 CHUNK_LIMIT = 3500             # paragraph-split text bodies above this many chars

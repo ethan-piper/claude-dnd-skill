@@ -33,10 +33,10 @@ import time
 import urllib.error
 import urllib.request
 
-from paths import display_dir as _display_dir
+from paths import display_dir as _display_dir, runtime_dir as _runtime_dir
 DISPLAY_DIR = str(_display_dir())
-TOKEN_FILE  = os.path.join(DISPLAY_DIR, ".token")
-SCHEME_FILE = os.path.join(DISPLAY_DIR, ".scheme")
+TOKEN_FILE  = os.path.join(str(_runtime_dir()), ".token")   # runtime state → update-safe dir
+SCHEME_FILE = os.path.join(DISPLAY_DIR, ".scheme")          # launch marker → code dir
 TIMEOUT     = 8.0
 
 # Match the scheme the display server is using (HTTP default, HTTPS if --tls).

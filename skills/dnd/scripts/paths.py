@@ -74,8 +74,27 @@ def scripts_dir() -> pathlib.Path:
 
 
 def display_dir() -> pathlib.Path:
-    """Display-companion directory (Flask app, send.py, push_stats.py, state files)."""
+    """Display-companion CODE directory (Flask app, send.py, push_stats.py, …)."""
     return skill_root() / "display"
+
+
+# ── Runtime state (writable, update-safe) ─────────────────────────────────
+# Distinct from both roots above. The display companion writes session state,
+# auth tokens, device approvals, and TLS certs while running. These must NOT
+# live in the CODE root: a plugin's code dir is refreshed/replaced on
+# `/plugin update` (which would wipe device approvals + certs) and may be
+# read-only. Keep them beside the user's campaign data, which is stable across
+# installs and updates. Override with DND_RUNTIME_DIR; default <data-root>/.runtime.
+
+def runtime_dir() -> pathlib.Path:
+    """Return the writable runtime-state directory, creating it if needed."""
+    raw = os.environ.get("DND_RUNTIME_DIR", "").strip()
+    d = pathlib.Path(raw).expanduser() if raw else (_root() / ".runtime")
+    try:
+        d.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
+    return d
 
 
 def campaigns_dir() -> pathlib.Path:
