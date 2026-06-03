@@ -88,12 +88,12 @@
   .dice{ grid-area:dice; background:var(--accent); color:var(--dice-text); padding:1cqw 2.4cqw; display:flex; align-items:baseline; gap:1.1cqw; }
   .dice .tag{ font-weight:800; font-size:.9cqw; letter-spacing:.12em; text-transform:uppercase; white-space:nowrap; }
   .dice .roll{ font-weight:600; font-size:1.08cqw; }
-  .dice .hit{ font-weight:800; text-transform:uppercase; background:var(--block); color:var(--accent); padding:0 .5cqw; }
+  .dice .hit{ font-weight:800; text-transform:uppercase; background:var(--text); color:var(--canvas); padding:0 .5cqw; }
   .dice .total{ margin-left:auto; font-weight:800; font-size:1.45cqw; white-space:nowrap; }
 
   /* themes (set on .screen) */
-  .light{ --canvas:#F3EFE4; --text:#14110C; --block:#14110C; --on-block:#F3EFE4; --accent:#E5481E; --dice-text:#14110C;
-    --track:rgba(243,239,228,.2); --hairline-block:rgba(243,239,228,.2); --block-key:none; --grain-blend:multiply; }
+  .light{ --canvas:#F3EFE4; --text:#14110C; --block:#FBF8F0; --on-block:#14110C; --accent:#E5481E; --dice-text:#F3EFE4;
+    --track:rgba(20,17,12,.14); --hairline-block:rgba(20,17,12,.16); --block-key:.16cqw solid rgba(20,17,12,.18); --grain-blend:multiply; }
   .dark{ --canvas:#16130E; --text:#E3DCCB; --block:#221C16; --on-block:#EDE6D6; --accent:#FF7A2D; --dice-text:#16130E;
     --track:rgba(237,230,214,.14); --hairline-block:rgba(237,230,214,.16); --block-key:.12cqw solid rgba(255,122,45,.4); --grain-blend:soft-light; }
 

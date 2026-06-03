@@ -72,7 +72,7 @@
   .hero .stat .v{ font-weight:800; font-size:5cqw; line-height:1; margin-top:.6cqw; }
 
   /* scrolling body */
-  .body{ flex:1; min-height:0; overflow:auto; padding:4cqw 5cqw 22cqw; }
+  .body{ flex:1; min-height:0; overflow:auto; padding:4cqw 5cqw 6cqw; }
   .body::-webkit-scrollbar{ display:none; }
   .kicker{ font-weight:800; font-size:2.6cqw; letter-spacing:.22em; text-transform:uppercase; color:var(--accent);
     display:flex; align-items:center; gap:2cqw; margin:0 0 2.6cqw; }
@@ -96,8 +96,8 @@
   .chip.on{ background:var(--accent); color:var(--dice-text); border-color:var(--accent); }
   .actions{ display:flex; gap:2.4cqw; margin-top:3.4cqw; }
   .btn{ flex:1; font-family:inherit; font-weight:800; font-size:3.4cqw; letter-spacing:.06em; text-transform:uppercase;
-    padding:3.4cqw; border:.5cqw solid var(--block); cursor:pointer; }
-  .btn.ghost{ background:transparent; color:var(--text); }
+    padding:3.4cqw; border:.5cqw solid var(--hairline); cursor:pointer; }
+  .btn.ghost{ background:transparent; color:var(--text); border-color:var(--text); }
   .btn.fill{ background:var(--accent); border-color:var(--accent); color:var(--dice-text); }
   .staged{ margin-top:4cqw; border-top:.4cqw solid var(--hairline); padding-top:3cqw; }
   .staged .row{ display:flex; align-items:center; gap:2.4cqw; }
@@ -133,25 +133,24 @@
   .lst .li .sub{ font-family:'Newsreader',serif; font-style:italic; font-size:3.2cqw; opacity:.7; }
   .lst .li .val{ font-weight:800; font-size:3.8cqw; color:var(--accent); white-space:nowrap; }
 
-  /* DM HELP floating */
-  .dmhelp{ position:absolute; right:5cqw; bottom:19cqw; z-index:18; font-family:inherit; font-weight:800;
-    font-size:3cqw; letter-spacing:.06em; text-transform:uppercase; padding:2.6cqw 4cqw; border-radius:100px;
-    background:var(--block); color:var(--on-block); border:.5cqw solid var(--accent); cursor:pointer;
-    box-shadow:0 4cqw 8cqw -2cqw rgba(0,0,0,.4); display:flex; align-items:center; gap:1.6cqw; }
+  /* docked footer: help bar + tabs (in-flow, never overlaps content) */
+  .footer{ flex:none; z-index:16; }
+  .dmhelp{ width:100%; display:flex; align-items:center; justify-content:center; gap:1.8cqw;
+    font-family:inherit; font-weight:800; font-size:3cqw; letter-spacing:.1em; text-transform:uppercase;
+    padding:3cqw; background:var(--surf); color:var(--accent); border:0; border-top:.4cqw solid var(--hairline); cursor:pointer; }
   .dmhelp::before{ content:"?"; display:grid; place-items:center; width:4.4cqw; height:4.4cqw; border-radius:50%;
     background:var(--accent); color:var(--dice-text); font-size:3cqw; }
 
   /* tab bar */
-  .tabbar{ position:absolute; left:0; right:0; bottom:0; z-index:16; display:flex; background:var(--block); color:var(--on-block);
-    border-top:var(--block-key); }
+  .tabbar{ display:flex; background:var(--block); color:var(--on-block); border-top:var(--block-key); }
   .tabbar button{ flex:1; font-family:inherit; font-weight:800; font-size:2.9cqw; letter-spacing:.1em; text-transform:uppercase;
     background:transparent; color:var(--on-block); border:0; padding:4cqw 0 6cqw; cursor:pointer; opacity:.5; position:relative; }
   .tabbar button.on{ opacity:1; }
   .tabbar button.on::after{ content:""; position:absolute; top:0; left:25%; right:25%; height:.8cqw; background:var(--accent); }
 
   /* themes */
-  .light{ --canvas:#F3EFE4; --surf:#FBF8F0; --text:#14110C; --block:#14110C; --on-block:#F3EFE4; --accent:#E5481E; --accent-ink:#C23A14; --dice-text:#F3EFE4;
-    --track:rgba(243,239,228,.22); --hairline:rgba(20,17,12,.2); --hairline-block:rgba(243,239,228,.22); --block-key:none; --grain-blend:multiply; }
+  .light{ --canvas:#F3EFE4; --surf:#FBF8F0; --text:#14110C; --block:#FBF8F0; --on-block:#14110C; --accent:#E5481E; --accent-ink:#C23A14; --dice-text:#F3EFE4;
+    --track:rgba(20,17,12,.14); --hairline:rgba(20,17,12,.18); --hairline-block:rgba(20,17,12,.16); --block-key:.4cqw solid rgba(20,17,12,.16); --grain-blend:multiply; }
   .dark{ --canvas:#16130E; --surf:#1d1913; --text:#E3DCCB; --block:#221C16; --on-block:#EDE6D6; --accent:#FF7A2D; --accent-ink:#FF9A55; --dice-text:#16130E;
     --track:rgba(237,230,214,.14); --hairline:rgba(237,230,214,.16); --hairline-block:rgba(237,230,214,.16); --block-key:.3cqw solid rgba(255,122,45,.4); --grain-blend:soft-light; }
 </style>
@@ -279,12 +278,14 @@
         </div>
       </div>
 
-      <button class="dmhelp">Ask the DM</button>
-      <nav class="tabbar" id="tabs">
-        <button data-s="s-play" class="on">Play</button>
-        <button data-s="s-dice">Dice</button>
-        <button data-s="s-sheet">Sheet</button>
-      </nav>
+      <div class="footer">
+        <button class="dmhelp">Ask the DM</button>
+        <nav class="tabbar" id="tabs">
+          <button data-s="s-play" class="on">Play</button>
+          <button data-s="s-dice">Dice</button>
+          <button data-s="s-sheet">Sheet</button>
+        </nav>
+      </div>
     </section>
   </div>
 
