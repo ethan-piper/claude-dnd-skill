@@ -48,8 +48,8 @@
     mix-blend-mode:var(--grain-blend); }
   .stage{ position:absolute; inset:0; display:grid; }
 
-  .masthead{ grid-area:head; background:var(--block); color:var(--on-block);
-    display:flex; align-items:center; justify-content:space-between; padding:1.5cqw 2.4cqw; border-bottom:var(--block-key); }
+  .masthead{ grid-area:head; background:var(--block-strong); color:var(--on-strong);
+    display:flex; align-items:center; justify-content:space-between; padding:1.5cqw 2.4cqw; border-bottom:var(--block-key-strong); }
   .title{ font-weight:800; font-size:2.4cqw; line-height:.92; letter-spacing:-.01em; }
   .title b{ color:var(--accent); }
   .meta{ font-weight:600; font-size:.86cqw; letter-spacing:.2em; text-transform:uppercase; opacity:.85; text-align:right; }
@@ -68,21 +68,21 @@
   .npc .who{ font-weight:800; font-size:.9cqw; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:.35cqw; }
   .npc q{ font-family:'Newsreader',serif; font-style:italic; font-size:2.4cqw; line-height:1.22; quotes:'“' '”'; display:block; }
 
-  .party{ grid-area:party; background:var(--block); color:var(--on-block); padding:1.4cqw 1.3cqw;
-    border-left:var(--block-key); display:flex; flex-direction:column; min-height:0; }
+  .party{ grid-area:party; background:var(--block-strong); color:var(--on-strong); padding:1.4cqw 1.3cqw;
+    border-left:var(--block-key-strong); display:flex; flex-direction:column; min-height:0; }
   .party-head{ font-weight:800; font-size:1cqw; text-transform:uppercase; letter-spacing:.06em;
-    padding-bottom:.55cqw; margin-bottom:.8cqw; border-bottom:.14cqw solid var(--hairline-block); }
+    padding-bottom:.55cqw; margin-bottom:.8cqw; border-bottom:.14cqw solid var(--hairline-strong); }
   .cards{ display:flex; flex-direction:column; gap:.75cqw; min-height:0; }
-  .card{ border-bottom:.12cqw solid var(--hairline-block); padding-bottom:.7cqw; }
+  .card{ border-bottom:.12cqw solid var(--hairline-strong); padding-bottom:.7cqw; }
   .card:last-child{ border-bottom:0; }
   .nm{ font-weight:800; font-size:1.08cqw; text-transform:uppercase; line-height:1; }
   .cl{ font-weight:600; font-size:.74cqw; letter-spacing:.1em; text-transform:uppercase; opacity:.55; margin:.22cqw 0 .5cqw; }
   .hprow{ display:flex; align-items:center; gap:.55cqw; }
-  .hptrack{ flex:1; height:.58cqw; background:var(--track); position:relative; overflow:hidden; }
+  .hptrack{ flex:1; height:.58cqw; background:var(--track-strong); position:relative; overflow:hidden; }
   .hpfill{ position:absolute; inset:0 auto 0 0; width:var(--pct); background:var(--accent); transition:width 1.2s cubic-bezier(.2,.8,.2,1); }
   .hpnum{ font-weight:800; font-size:.9cqw; font-variant-numeric:tabular-nums; }
   .chips{ display:flex; gap:.4cqw; margin-top:.5cqw; flex-wrap:wrap; }
-  .chip{ font-weight:700; font-size:.66cqw; letter-spacing:.05em; text-transform:uppercase; border:.1cqw solid var(--hairline-block); padding:.16cqw .4cqw; }
+  .chip{ font-weight:700; font-size:.66cqw; letter-spacing:.05em; text-transform:uppercase; border:.1cqw solid var(--hairline-strong); padding:.16cqw .4cqw; }
   .chip b{ color:var(--accent); }
 
   .dice{ grid-area:dice; background:var(--accent); color:var(--dice-text); padding:1cqw 2.4cqw; display:flex; align-items:baseline; gap:1.1cqw; }
@@ -91,18 +91,26 @@
   .dice .hit{ font-weight:800; text-transform:uppercase; background:var(--text); color:var(--canvas); padding:0 .5cqw; }
   .dice .total{ margin-left:auto; font-weight:800; font-size:1.45cqw; white-space:nowrap; }
 
-  /* themes (set on .screen) */
-  .light{ --canvas:#F3EFE4; --text:#14110C; --block:#FBF8F0; --on-block:#14110C; --accent:#E5481E; --dice-text:#F3EFE4;
-    --track:rgba(20,17,12,.14); --hairline-block:rgba(20,17,12,.16); --block-key:.16cqw solid rgba(20,17,12,.18); --grain-blend:multiply; }
-  .dark{ --canvas:#16130E; --text:#E3DCCB; --block:#221C16; --on-block:#EDE6D6; --accent:#FF7A2D; --dice-text:#16130E;
-    --track:rgba(237,230,214,.14); --hairline-block:rgba(237,230,214,.16); --block-key:.12cqw solid rgba(255,122,45,.4); --grain-blend:soft-light; }
+  /* themes (set on .screen) — "strong" vars drive masthead + party chrome */
+  .light{ --canvas:#F3EFE4; --text:#14110C; --block:#FBF8F0; --on-block:#14110C;
+    --block-strong:#FBF8F0; --on-strong:#14110C; --accent:#E5481E; --dice-text:#F3EFE4;
+    --track:rgba(20,17,12,.14); --track-strong:rgba(20,17,12,.14); --hairline-block:rgba(20,17,12,.16); --hairline-strong:rgba(20,17,12,.16);
+    --block-key:.16cqw solid rgba(20,17,12,.18); --block-key-strong:.16cqw solid rgba(20,17,12,.18); --grain-blend:multiply; }
+  .lightbold{ --canvas:#F3EFE4; --text:#14110C; --block:#FBF8F0; --on-block:#14110C;
+    --block-strong:#14110C; --on-strong:#F3EFE4; --accent:#E5481E; --dice-text:#F3EFE4;
+    --track:rgba(20,17,12,.14); --track-strong:rgba(243,239,228,.22); --hairline-block:rgba(20,17,12,.16); --hairline-strong:rgba(243,239,228,.24);
+    --block-key:.16cqw solid rgba(20,17,12,.18); --block-key-strong:none; --grain-blend:multiply; }
+  .dark{ --canvas:#16130E; --text:#E3DCCB; --block:#221C16; --on-block:#EDE6D6;
+    --block-strong:#221C16; --on-strong:#EDE6D6; --accent:#FF7A2D; --dice-text:#16130E;
+    --track:rgba(237,230,214,.14); --track-strong:rgba(237,230,214,.14); --hairline-block:rgba(237,230,214,.16); --hairline-strong:rgba(237,230,214,.16);
+    --block-key:.12cqw solid rgba(255,122,45,.4); --block-key-strong:.12cqw solid rgba(255,122,45,.4); --grain-blend:soft-light; }
 
   /* iterations */
   .itA .stage{ grid-template-columns:1fr .4fr; grid-template-rows:auto 1fr auto auto;
     grid-template-areas:"head head" "story party" "npc party" "dice dice"; }
   .itB .stage{ grid-template-columns:.34fr 1fr; grid-template-rows:auto 1fr auto auto;
     grid-template-areas:"party head" "party story" "party npc" "dice dice"; }
-  .itB .party{ border-left:none; border-right:var(--block-key); }
+  .itB .party{ border-left:none; border-right:var(--block-key-strong); }
   .itB .npc{ margin-left:0; }
   .itC .stage{ grid-template-columns:1fr; grid-template-rows:auto auto 1fr auto auto;
     grid-template-areas:"head" "story" "npc" "party" "dice"; }
@@ -112,7 +120,7 @@
   .itC .npc .who{ font-size:1.05cqw; margin-bottom:.6cqw; }
   .itC .party{ flex-direction:column; }
   .itC .cards{ flex-direction:row; gap:1.4cqw; }
-  .itC .card{ flex:1; border-bottom:0; border-left:.12cqw solid var(--hairline-block); padding:0 0 0 .8cqw; }
+  .itC .card{ flex:1; border-bottom:0; border-left:.12cqw solid var(--hairline-strong); padding:0 0 0 .8cqw; }
   .itC .card:first-child{ border-left:0; padding-left:0; }
 </style>
 </head>
@@ -125,12 +133,12 @@
       <button data-it="itB" class="active">B · Gallery</button>
       <button data-it="itC">C · Speaker</button>
     </div>
-    <div class="toggle" id="themeToggle" title="Toggle light / dark">
-      <span class="dm">Dark</span>
-      <div class="sw"></div>
-      <span class="lm">Light</span>
+    <div class="seg" id="themes">
+      <button data-t="dark" class="active">Dark</button>
+      <button data-t="light">Light</button>
+      <button data-t="lightbold">Bold</button>
     </div>
-    <span class="hint">T = theme · 1/2/3 = layout</span>
+    <span class="hint">1/2/3 = layout · D L B = theme</span>
   </div>
 
   <div class="stage-wrap">
@@ -184,19 +192,21 @@
 
     function apply(){
       screen.className = 'screen ' + theme + ' ' + iter;
-      document.body.classList.toggle('is-light', theme === 'light');
+      document.body.classList.toggle('is-light', theme !== 'dark');
       document.querySelectorAll('#iters button').forEach(b=>b.classList.toggle('active', b.dataset.it===iter));
+      document.querySelectorAll('#themes button').forEach(b=>b.classList.toggle('active', b.dataset.t===theme));
     }
     function setTheme(t){ theme = t; apply(); }
-    function toggleTheme(){ setTheme(theme==='dark'?'light':'dark'); }
 
-    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    document.querySelectorAll('#themes button').forEach(b=>b.addEventListener('click',()=>setTheme(b.dataset.t)));
     document.querySelectorAll('#iters button').forEach(b=>b.addEventListener('click',()=>{ iter=b.dataset.it; apply(); }));
     addEventListener('keydown', e=>{
-      if(e.key==='t'||e.key==='T') toggleTheme();
       if(e.key==='1') { iter='itA'; apply(); }
       if(e.key==='2') { iter='itB'; apply(); }
       if(e.key==='3') { iter='itC'; apply(); }
+      if(e.key==='d'||e.key==='D') setTheme('dark');
+      if(e.key==='l'||e.key==='L') setTheme('light');
+      if(e.key==='b'||e.key==='B') setTheme('lightbold');
     });
     apply();
   </script>
