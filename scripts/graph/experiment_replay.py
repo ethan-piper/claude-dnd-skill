@@ -49,7 +49,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # CONFIGURE: your campaign root + graph script path
 CAMP_DIR     = pathlib.Path.home() / ".claude/dnd/campaigns/<your-campaign>"
-GRAPH_SCRIPT = pathlib.Path.home() / ".claude/skills/dnd/scripts/campaign_graph.py"
+GRAPH_SCRIPT = pathlib.Path(__file__).resolve().parent.parent / "campaign_graph.py"
 OUT_DIR      = pathlib.Path("/tmp/replay-outputs")
 
 # CONFIGURE: voice the NPC giving the response. Spell out response constraints

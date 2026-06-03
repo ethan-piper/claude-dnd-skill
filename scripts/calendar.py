@@ -46,9 +46,9 @@ import os
 import sys
 import subprocess
 import argparse
-from paths import find_campaign as _find_campaign
+from paths import find_campaign as _find_campaign, display_dir as _display_dir
 
-SEND_PY = os.path.expanduser("~/.claude/skills/dnd/display/send.py")
+SEND_PY = str(_display_dir() / "send.py")
 
 # Time of day labels and approximate hour ranges
 TIMES_OF_DAY = [

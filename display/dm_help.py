@@ -26,9 +26,9 @@ import re
 import subprocess
 import sys
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / "scripts"))
-from paths import find_campaign as _find_campaign
+from paths import find_campaign as _find_campaign, skill_root as _skill_root
 
-BASE      = pathlib.Path("~/.claude/skills/dnd").expanduser()
+BASE      = _skill_root()
 LOCK_FILE = BASE / "display" / ".help-lock"
 LOG_FILE  = BASE / "display" / "text_log.json"
 SEND_PY   = BASE / "display" / "send.py"

@@ -19,7 +19,8 @@ import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
-DATA_DIR = os.path.expanduser("~/.claude/skills/dnd/data")
+from paths import data_dir as _data_dir
+DATA_DIR = str(_data_dir())
 BASE_URL  = "https://raw.githubusercontent.com/5e-bits/5e-database/main/src/2014"
 META_FILE = os.path.join(DATA_DIR, "meta.json")
 

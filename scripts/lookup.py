@@ -36,10 +36,16 @@ try:
 except Exception:
     _paths = None
 
-DATA_FILE_2014    = os.path.expanduser("~/.claude/skills/dnd/data/dnd5e_srd.json")
-DATA_FILE_2024    = os.path.expanduser("~/.claude/skills/dnd/data/dnd5e_srd_2024.json")
-SUPPLEMENTAL_FILE_2014 = os.path.expanduser("~/.claude/skills/dnd/data/dnd5e_supplemental.json")
-SUPPLEMENTAL_FILE_2024 = os.path.expanduser("~/.claude/skills/dnd/data/dnd5e_supplemental_2024.json")
+# Resolve the bundled-data dir via paths.py (honors CLAUDE_PLUGIN_ROOT / __file__).
+# Fall back to the legacy standalone location only if the import failed.
+if _paths is not None:
+    _DATA_DIR = str(_paths.data_dir())
+else:
+    _DATA_DIR = os.path.expanduser("~/.claude/skills/dnd/data")
+DATA_FILE_2014    = os.path.join(_DATA_DIR, "dnd5e_srd.json")
+DATA_FILE_2024    = os.path.join(_DATA_DIR, "dnd5e_srd_2024.json")
+SUPPLEMENTAL_FILE_2014 = os.path.join(_DATA_DIR, "dnd5e_supplemental.json")
+SUPPLEMENTAL_FILE_2024 = os.path.join(_DATA_DIR, "dnd5e_supplemental_2024.json")
 
 # Backwards-compat alias used by older callers (e.g. app.py)
 DATA_FILE         = DATA_FILE_2014

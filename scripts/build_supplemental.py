@@ -35,9 +35,8 @@ import urllib.request
 import urllib.parse
 from html.parser import HTMLParser
 
-SKILLS_DIR       = os.path.expanduser("~/.claude/skills/dnd")
-
-from paths import campaigns_dir as _campaigns_dir, find_campaign as _find_campaign
+from paths import campaigns_dir as _campaigns_dir, find_campaign as _find_campaign, skill_root as _skill_root
+SKILLS_DIR       = str(_skill_root())
 CAMPAIGNS_DIR    = str(_campaigns_dir())
 
 # Defaults — overridden per-call once --ruleset is parsed.

@@ -44,12 +44,13 @@ import tty
 import ssl
 import urllib.request
 
-TRIGGER_FILE   = os.path.expanduser("~/.claude/skills/dnd/display/.input_trigger")
-QUEUE_FILE     = os.path.expanduser("~/.claude/skills/dnd/display/.input_queue")
-STATS_FILE     = os.path.expanduser("~/.claude/skills/dnd/display/stats.json")
-CAMP_FILE      = os.path.expanduser("~/.claude/skills/dnd/display/.campaign")
-AUDIT_LOG      = os.path.expanduser("~/.claude/skills/dnd/display/input_log.json")
-TOKEN_FILE     = os.path.expanduser("~/.claude/skills/dnd/display/.token")
+_HERE          = os.path.dirname(os.path.abspath(__file__))
+TRIGGER_FILE   = os.path.join(_HERE, ".input_trigger")
+QUEUE_FILE     = os.path.join(_HERE, ".input_queue")
+STATS_FILE     = os.path.join(_HERE, "stats.json")
+CAMP_FILE      = os.path.join(_HERE, ".campaign")
+AUDIT_LOG      = os.path.join(_HERE, "input_log.json")
+TOKEN_FILE     = os.path.join(_HERE, ".token")
 DISPLAY_URL    = "https://127.0.0.1:5001"
 
 # Self-signed cert — skip verification for localhost

@@ -17,7 +17,7 @@ One line per character. Same format as autorun-wait.sh output.
 import os
 import sys
 
-QUEUE_FILE = os.path.expanduser("~/.claude/skills/dnd/display/.input_queue")
+QUEUE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".input_queue")
 
 try:
     if os.path.exists(QUEUE_FILE):

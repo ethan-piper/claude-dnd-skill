@@ -32,7 +32,8 @@ except ImportError:
     print("Run with --no-fvtt to skip class features and build spells/items only.")
     yaml = None  # type: ignore
 
-DATA_DIR  = os.path.expanduser("~/.claude/skills/dnd/data")
+from paths import data_dir as _data_dir
+DATA_DIR  = str(_data_dir())
 
 # Ruleset configuration. 2014 is the historical default; 2024 is partial
 # upstream (spells not yet in 5e-bits 2024 dir as of build date — those

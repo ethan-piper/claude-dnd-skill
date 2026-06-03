@@ -34,8 +34,12 @@ from typing import Optional
 from flask import Flask, Response, request, render_template, jsonify, send_from_directory
 from flask_cors import CORS
 
-LOG_FILE      = os.path.expanduser("~/.claude/skills/dnd/display/text_log.json")
-SCRIPTS_DIR   = os.path.expanduser("~/.claude/skills/dnd/scripts")
+# This file lives at <code-root>/display/ — resolve both dirs from its location
+# so paths work in any install mode (plugin, standalone skill, or dev clone).
+_HERE         = os.path.dirname(os.path.abspath(__file__))
+_ROOT         = os.path.dirname(_HERE)
+LOG_FILE      = os.path.join(_HERE, "text_log.json")
+SCRIPTS_DIR   = os.path.join(_ROOT, "scripts")
 
 # SRD lookup module — degrades silently if dataset not built
 if SCRIPTS_DIR not in sys.path:
@@ -77,7 +81,7 @@ def _apply_campaign_sfx_languages() -> None:
     if _audio is None:
         return
     try:
-        camp = open(os.path.expanduser("~/.claude/skills/dnd/display/.campaign")).read().strip()
+        camp = open(os.path.join(_HERE, ".campaign")).read().strip()
         if not camp:
             return
         state_md = _find_campaign(camp) / "state.md"
@@ -97,15 +101,15 @@ def _apply_campaign_sfx_languages() -> None:
 
 _apply_campaign_sfx_languages()
 
-HELP_LOCK     = os.path.expanduser("~/.claude/skills/dnd/display/.help-lock")
-CAMP_FILE     = os.path.expanduser("~/.claude/skills/dnd/display/.campaign")
-STATS_FILE    = os.path.expanduser("~/.claude/skills/dnd/display/stats.json")
-TOKEN_FILE    = os.path.expanduser("~/.claude/skills/dnd/display/.token")
-INPUT_FILE    = os.path.expanduser("~/.claude/skills/dnd/display/player_input.json")
-TRIGGER_FILE  = os.path.expanduser("~/.claude/skills/dnd/display/.input_trigger")
-QUEUE_FILE    = os.path.expanduser("~/.claude/skills/dnd/display/.input_queue")
-DEVICES_FILE         = os.path.expanduser("~/.claude/skills/dnd/display/.approved_devices.json")
-PENDING_DEVICES_FILE = os.path.expanduser("~/.claude/skills/dnd/display/.pending_devices.json")
+HELP_LOCK     = os.path.join(_HERE, ".help-lock")
+CAMP_FILE     = os.path.join(_HERE, ".campaign")
+STATS_FILE    = os.path.join(_HERE, "stats.json")
+TOKEN_FILE    = os.path.join(_HERE, ".token")
+INPUT_FILE    = os.path.join(_HERE, "player_input.json")
+TRIGGER_FILE  = os.path.join(_HERE, ".input_trigger")
+QUEUE_FILE    = os.path.join(_HERE, ".input_queue")
+DEVICES_FILE         = os.path.join(_HERE, ".approved_devices.json")
+PENDING_DEVICES_FILE = os.path.join(_HERE, ".pending_devices.json")
 
 # ─── LAN / TLS mode ───────────────────────────────────────────────────────────
 # Pass --lan to bind on 0.0.0.0 and protect write endpoints with a token.

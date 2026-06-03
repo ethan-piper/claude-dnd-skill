@@ -44,10 +44,10 @@ import subprocess
 import argparse
 import time
 from datetime import datetime, timezone
-from paths import find_campaign as _find_campaign
+from paths import find_campaign as _find_campaign, display_dir as _display_dir
 
-PUSH_STATS = os.path.expanduser("~/.claude/skills/dnd/display/push_stats.py")
-SEND_PY    = os.path.expanduser("~/.claude/skills/dnd/display/send.py")
+PUSH_STATS = str(_display_dir() / "push_stats.py")
+SEND_PY    = str(_display_dir() / "send.py")
 
 # 5e condition colours for display pills
 CONDITION_COLOURS = {

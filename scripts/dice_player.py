@@ -33,7 +33,8 @@ import time
 import urllib.error
 import urllib.request
 
-DISPLAY_DIR = os.path.expanduser("~/.claude/skills/dnd/display")
+from paths import display_dir as _display_dir
+DISPLAY_DIR = str(_display_dir())
 TOKEN_FILE  = os.path.join(DISPLAY_DIR, ".token")
 SCHEME_FILE = os.path.join(DISPLAY_DIR, ".scheme")
 TIMEOUT     = 8.0

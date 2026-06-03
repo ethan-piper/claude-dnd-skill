@@ -11,6 +11,15 @@ Usage:
 Environment:
     DND_CAMPAIGN_ROOT   Root of campaign data tree. Default: ~/.claude/dnd
                         Example: export DND_CAMPAIGN_ROOT=~/iCloud/dnd
+    CLAUDE_PLUGIN_ROOT  Set by Claude Code when this ships as a plugin. Points at
+                        the installed plugin/code root. When unset (standalone
+                        skill or dev checkout) the code root is resolved from this
+                        file's location — see skill_root().
+
+Two distinct roots:
+    * DATA root  — where campaigns/characters live (DND_CAMPAIGN_ROOT). User data.
+    * CODE root  — where scripts/data/display assets live (skill_root()). Read the
+                   bundled SRD, the display companion, and sibling scripts from here.
 """
 
 import os
@@ -27,6 +36,38 @@ def _root() -> pathlib.Path:
     if raw.strip():
         return pathlib.Path(raw.strip()).expanduser().resolve()
     return _DEFAULT_ROOT
+
+
+# ── Code root (scripts / data / display assets) ───────────────────────────
+# Distinct from the DATA root above. This locates the *installed code* — the
+# bundled SRD JSON, the display companion, and sibling scripts. Works in three
+# install modes:
+#   1. Plugin     — Claude Code exports CLAUDE_PLUGIN_ROOT at the plugin root.
+#   2. Standalone — legacy install at ~/.claude/skills/dnd (this file's grandparent).
+#   3. Dev clone  — anywhere on disk; resolved the same way as (2), from __file__.
+# paths.py lives at <code-root>/scripts/paths.py, so the root is parent.parent.
+
+def skill_root() -> pathlib.Path:
+    """Return the installed code root, honoring CLAUDE_PLUGIN_ROOT when set."""
+    env = os.environ.get("CLAUDE_PLUGIN_ROOT", "").strip()
+    if env:
+        return pathlib.Path(env).expanduser().resolve()
+    return pathlib.Path(__file__).resolve().parent.parent
+
+
+def data_dir() -> pathlib.Path:
+    """Bundled dataset directory (SRD JSON, supplemental, external corpus)."""
+    return skill_root() / "data"
+
+
+def scripts_dir() -> pathlib.Path:
+    """Directory holding the helper scripts (this file's directory)."""
+    return skill_root() / "scripts"
+
+
+def display_dir() -> pathlib.Path:
+    """Display-companion directory (Flask app, send.py, push_stats.py, state files)."""
+    return skill_root() / "display"
 
 
 def campaigns_dir() -> pathlib.Path:
@@ -127,9 +168,8 @@ def srd_path(ruleset=None):
     rs = ruleset or DEFAULT_RULESET
     if rs not in VALID_RULESETS:
         rs = DEFAULT_RULESET
-    skill_data = pathlib.Path("~/.claude/skills/dnd/data").expanduser()
     fname = "dnd5e_srd_2024.json" if rs == "2024" else "dnd5e_srd.json"
-    return skill_data / fname
+    return data_dir() / fname
 
 
 # ── CLI passthrough ───────────────────────────────────────────────────────

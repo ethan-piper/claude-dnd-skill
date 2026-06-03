@@ -17,7 +17,8 @@ import subprocess
 import sys
 import urllib.request
 
-DATA_DIR = os.path.expanduser("~/.claude/skills/dnd/data")
+from paths import data_dir as _data_dir
+DATA_DIR = str(_data_dir())
 OUT_FILE = os.path.join(DATA_DIR, "dnd5e_srd.json")
 BUILD_PY = os.path.join(os.path.dirname(os.path.abspath(__file__)), "build_srd.py")
 
