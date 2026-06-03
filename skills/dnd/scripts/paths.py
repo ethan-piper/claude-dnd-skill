@@ -11,15 +11,18 @@ Usage:
 Environment:
     DND_CAMPAIGN_ROOT   Root of campaign data tree. Default: ~/.claude/dnd
                         Example: export DND_CAMPAIGN_ROOT=~/iCloud/dnd
-    CLAUDE_PLUGIN_ROOT  Set by Claude Code when this ships as a plugin. Points at
-                        the installed plugin/code root. When unset (standalone
-                        skill or dev checkout) the code root is resolved from this
-                        file's location — see skill_root().
+    CLAUDE_SKILL_DIR    Set by Claude Code for plugin/installed skills. Points at
+                        the directory containing SKILL.md (the skill's own dir,
+                        NOT the plugin root). When unset (ad-hoc subprocess, dev
+                        checkout) the code root is resolved from this file's
+                        location — see skill_root().
 
 Two distinct roots:
     * DATA root  — where campaigns/characters live (DND_CAMPAIGN_ROOT). User data.
     * CODE root  — where scripts/data/display assets live (skill_root()). Read the
                    bundled SRD, the display companion, and sibling scripts from here.
+                   For a plugin this is <plugin>/skills/dnd/, so we resolve to the
+                   skill dir — never CLAUDE_PLUGIN_ROOT (wrong granularity).
 """
 
 import os
@@ -40,16 +43,21 @@ def _root() -> pathlib.Path:
 
 # ── Code root (scripts / data / display assets) ───────────────────────────
 # Distinct from the DATA root above. This locates the *installed code* — the
-# bundled SRD JSON, the display companion, and sibling scripts. Works in three
-# install modes:
-#   1. Plugin     — Claude Code exports CLAUDE_PLUGIN_ROOT at the plugin root.
-#   2. Standalone — legacy install at ~/.claude/skills/dnd (this file's grandparent).
-#   3. Dev clone  — anywhere on disk; resolved the same way as (2), from __file__.
-# paths.py lives at <code-root>/scripts/paths.py, so the root is parent.parent.
+# bundled SRD JSON, the display companion, and sibling scripts. paths.py lives
+# at <code-root>/scripts/paths.py, so the root is parent.parent. Works in every
+# install mode:
+#   1. Plugin     — code lives at <plugin>/skills/dnd/; CLAUDE_SKILL_DIR points
+#                   there when exported. (CLAUDE_PLUGIN_ROOT would be the plugin
+#                   root — the wrong level — so we deliberately do not use it.)
+#   2. Standalone — legacy install at ~/.claude/skills/dnd.
+#   3. Dev clone  — anywhere on disk.
+# In all three, __file__ resolution is correct and needs no env var; the
+# CLAUDE_SKILL_DIR check is a belt-and-suspenders fast path for plugin contexts
+# that export it into the subprocess environment.
 
 def skill_root() -> pathlib.Path:
-    """Return the installed code root, honoring CLAUDE_PLUGIN_ROOT when set."""
-    env = os.environ.get("CLAUDE_PLUGIN_ROOT", "").strip()
+    """Return the skill's own directory (holds scripts/, data/, display/)."""
+    env = os.environ.get("CLAUDE_SKILL_DIR", "").strip()
     if env:
         return pathlib.Path(env).expanduser().resolve()
     return pathlib.Path(__file__).resolve().parent.parent

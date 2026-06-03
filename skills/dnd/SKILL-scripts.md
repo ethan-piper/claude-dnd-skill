@@ -2,6 +2,8 @@
 
 Full syntax for all Python helper scripts. Load this file once at `/dnd load`, then it stays in context for the session.
 
+> **Path note:** commands below use `${CLAUDE_SKILL_DIR}` for the skill directory. This file is read verbatim, so that token is **not** auto-expanded here — substitute the absolute skill-dir path (from `SKILL.md`) before running any command, or it will fail with a broken `/scripts/…` path.
+
 ---
 
 ## Dice Script — `scripts/dice.py`
@@ -9,24 +11,24 @@ Full syntax for all Python helper scripts. Load this file once at `/dnd load`, t
 **MANDATORY.** Every die roll in play — player checks, NPC attacks, saves, damage, ability score gen, anything — must be produced by invoking this script via Bash. **Never sample dice mentally or with inline `random` calls.** The script routes rolls through a local physical-dice server that may surface them on the player's phone for them to cast; rolling in your head bypasses that and breaks the ritual. If the server isn't running the script falls back to local random — so there is no scenario where the script should be skipped.
 
 ```bash
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+5
-python3 ~/.claude/skills/dnd/scripts/dice.py 2d6+3
-python3 ~/.claude/skills/dnd/scripts/dice.py 4d6kh3        # ability score roll
-python3 ~/.claude/skills/dnd/scripts/dice.py d20 adv       # advantage
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+3 dis     # disadvantage + modifier
-python3 ~/.claude/skills/dnd/scripts/dice.py d20 --silent  # returns integer only
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+5
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 2d6+3
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 4d6kh3        # ability score roll
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20 adv       # advantage
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+3 dis     # disadvantage + modifier
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20 --silent  # returns integer only
 
 # Always pass --label so the phone HUD shows what the roll is for:
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+4 --label "Perception check"
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+6 adv --label "Attack — Goblin Boss vs Piper"
-python3 ~/.claude/skills/dnd/scripts/dice.py 2d8+3 --label "Greataxe damage"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+4 --label "Perception check"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+6 adv --label "Attack — Goblin Boss vs Piper"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py 2d8+3 --label "Greataxe damage"
 
 # Player rolls — pass --player <pc-name> to route to that player's phone tab:
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+4 --label "Perception" --player piper
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+6 adv --label "Attack" --player piper
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+4 --label "Perception" --player piper
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+6 adv --label "Attack" --player piper
 # NPC / monster / DM-side rolls — omit --player (routes to the DM channel,
 # which auto-rolls server-side if the DM has no tab open).
-python3 ~/.claude/skills/dnd/scripts/dice.py d20+5 --label "Goblin attack"
+python3 ${CLAUDE_SKILL_DIR}/scripts/dice.py d20+5 --label "Goblin attack"
 ```
 
 **Routing rule:** if the roll is **for a player character**, pass `--player <pc-name>` (lowercase, matches whatever name the player used in the URL). If the roll is for an NPC/monster/anything the DM resolves, omit `--player` so it doesn't ring the players' phones.
@@ -45,10 +47,10 @@ To force-skip the physical roller (e.g. high-volume NPC rolls you don't want to 
 
 ## Ability Scores Script — `scripts/ability-scores.py`
 ```bash
-python3 ~/.claude/skills/dnd/scripts/ability-scores.py roll
-python3 ~/.claude/skills/dnd/scripts/ability-scores.py pointbuy
-python3 ~/.claude/skills/dnd/scripts/ability-scores.py pointbuy --check STR=15 DEX=10 CON=15 INT=8 WIS=11 CHA=12
-python3 ~/.claude/skills/dnd/scripts/ability-scores.py modifiers STR=15 DEX=10 CON=15 INT=8 WIS=11 CHA=12
+python3 ${CLAUDE_SKILL_DIR}/scripts/ability-scores.py roll
+python3 ${CLAUDE_SKILL_DIR}/scripts/ability-scores.py pointbuy
+python3 ${CLAUDE_SKILL_DIR}/scripts/ability-scores.py pointbuy --check STR=15 DEX=10 CON=15 INT=8 WIS=11 CHA=12
+python3 ${CLAUDE_SKILL_DIR}/scripts/ability-scores.py modifiers STR=15 DEX=10 CON=15 INT=8 WIS=11 CHA=12
 ```
 Roll mode: generates 3 arrays (4d6kh3 × 6 each). Point buy mode: prints cost table; `--check` validates against the 27-point budget.
 
@@ -59,20 +61,20 @@ Awards XP for combat and qualifying non-combat encounters. Reads character files
 
 ```bash
 # Preview — no files modified:
-python3 ~/.claude/skills/dnd/scripts/xp.py calc --level 3 --players 2 --difficulty hard --type combat
-python3 ~/.claude/skills/dnd/scripts/xp.py calc --level 3 --players 2 --monsters "goblin:1/4:3,hobgoblin:1:1"
+python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py calc --level 3 --players 2 --difficulty hard --type combat
+python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py calc --level 3 --players 2 --monsters "goblin:1/4:3,hobgoblin:1:1"
 
 # Award after a combat encounter — difficulty-rated (use when full monster list is unavailable):
-python3 ~/.claude/skills/dnd/scripts/xp.py award \
+python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py award \
   --campaign <name> --characters "Max of Thraxx,Ethros the 19th" --difficulty hard --type combat
 
 # Award after a combat encounter — exact CR calculation (preferred for standard combats):
-python3 ~/.claude/skills/dnd/scripts/xp.py award \
+python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py award \
   --campaign <name> --characters "Max of Thraxx,Ethros the 19th" \
   --monsters "goblin:1/4:3,hobgoblin:1:1" --note "Ambush in the alley"
 
 # Award for a qualifying non-combat encounter:
-python3 ~/.claude/skills/dnd/scripts/xp.py award \
+python3 ${CLAUDE_SKILL_DIR}/scripts/xp.py award \
   --campaign <name> --characters "Max of Thraxx,Ethros the 19th" --difficulty medium --type noncombat \
   --note "guild informant interrogation"
 ```
@@ -90,14 +92,14 @@ python3 ~/.claude/skills/dnd/scripts/xp.py award \
 ## Combat Script — `scripts/combat.py`
 ```bash
 # Roll initiative and print tracker
-python3 ~/.claude/skills/dnd/scripts/combat.py init '<JSON>'
+python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py init '<JSON>'
 # JSON: [{"name":"Flerb","dex_mod":0,"hp":12,"ac":16,"type":"pc"}, ...]
 
 # Reprint tracker from saved state
-python3 ~/.claude/skills/dnd/scripts/combat.py tracker '<JSON>' <round_num>
+python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py tracker '<JSON>' <round_num>
 
 # Resolve a single attack
-python3 ~/.claude/skills/dnd/scripts/combat.py attack --atk 4 --ac 15 --dmg 2d6+2
+python3 ${CLAUDE_SKILL_DIR}/scripts/combat.py attack --atk 4 --ac 15 --dmg 2d6+2
 ```
 `init` outputs `STATE_JSON:` line — store in `state.md` under `## Active Combat` between turns.
 
@@ -106,15 +108,15 @@ python3 ~/.claude/skills/dnd/scripts/combat.py attack --atk 4 --ac 15 --dmg 2d6+
 ## Character Script — `scripts/character.py`
 ```bash
 # Full stat block from raw scores
-python3 ~/.claude/skills/dnd/scripts/character.py calc --class fighter --level 1 \
+python3 ${CLAUDE_SKILL_DIR}/scripts/character.py calc --class fighter --level 1 \
     STR=15 DEX=10 CON=15 INT=9 WIS=11 CHA=14 \
     --proficient STR CON Athletics Intimidation Perception Survival
 
 # Level-up HP and bonus calculation
-python3 ~/.claude/skills/dnd/scripts/character.py levelup --class fighter --from 1 --hp-roll 7 --con-mod 2
+python3 ${CLAUDE_SKILL_DIR}/scripts/character.py levelup --class fighter --from 1 --hp-roll 7 --con-mod 2
 
 # XP tracking
-python3 ~/.claude/skills/dnd/scripts/character.py xp --level 1 --gained 150
+python3 ${CLAUDE_SKILL_DIR}/scripts/character.py xp --level 1 --gained 150
 ```
 
 ---
@@ -124,7 +126,7 @@ Pushes character and combat stats to the sidebar. Players merged by name; partia
 
 ```bash
 # Full stats push (on /dnd load — use --replace-players to clear stale characters):
-python3 ~/.claude/skills/dnd/display/push_stats.py --replace-players --json '{
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --replace-players --json '{
   "players": [{
     "name": "Flerb", "race": "Tiefling", "class": "Fighter", "level": 1, "background": "Soldier",
     "hp": {"current": 12, "max": 12, "temp": 0},
@@ -157,74 +159,74 @@ python3 ~/.claude/skills/dnd/display/push_stats.py --replace-players --json '{
 # sheet is optional — omit if you only need the stats sidebar without the full sheet modal
 
 # Partial updates (use whenever values change mid-session):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --hp 7 12
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --xp 220 300
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --second-wind false
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --hp 7 12
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --xp 220 300
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --second-wind false
 
 # Temp HP (Symbiotic Entity, Aid, etc.):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --temp-hp 8   # set
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --temp-hp 0   # clear
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --temp-hp 8   # set
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --temp-hp 0   # clear
 
 # Hit dice (short rest):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --hit-dice-use          # spend one
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --hit-dice-restore 2    # restore N
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --hit-dice-use          # spend one
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --hit-dice-restore 2    # restore N
 
 # Conditions — full replace:
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --conditions "Poisoned,Frightened"
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --conditions ""          # clear all
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --conditions "Poisoned,Frightened"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --conditions ""          # clear all
 
 # Conditions — granular (preferred mid-session):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --conditions-add "Poisoned"
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --conditions-remove "Poisoned"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --conditions-add "Poisoned"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --conditions-remove "Poisoned"
 
 # Concentration:
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --concentrate "Bless"
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --concentrate ""        # clear
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --concentrate "Bless"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --concentrate ""        # clear
 
 # Spell slots — full replace (on /dnd load):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb \
   --spell-slots '{"1":{"used":1,"max":4},"2":{"used":0,"max":2}}'
 
 # Spell slots — granular (preferred mid-session):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --slot-use 1      # expend one 1st-level slot
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --slot-restore 2  # restore one 2nd-level slot
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --slot-use 1      # expend one 1st-level slot
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --slot-restore 2  # restore one 2nd-level slot
 
 # Inventory — granular (preferred to full --sheet rewrite):
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --inventory-add "Iron key"
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Flerb --inventory-remove "Folded paper"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --inventory-add "Iron key"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Flerb --inventory-remove "Folded paper"
 
 # Faction standings (party-wide — REQUIRED at /dnd load to show faction panel):
-python3 ~/.claude/skills/dnd/display/push_stats.py \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py \
   --factions '[{"name":"Pale Court","standing":"Allied"},{"name":"Watch","standing":"Neutral"}]'
-python3 ~/.claude/skills/dnd/display/push_stats.py --factions '[]'   # clear all
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --factions '[]'   # clear all
 
 # Combat turn order (on /dnd combat start):
-python3 ~/.claude/skills/dnd/display/push_stats.py --turn-order \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --turn-order \
   '{"order":["Goblin 1","Flerb","Goblin 2"],"current":"Goblin 1","round":1}'
 
 # Advance turn pointer:
-python3 ~/.claude/skills/dnd/display/push_stats.py --turn-current "Flerb"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --turn-current "Flerb"
 
 # New round:
-python3 ~/.claude/skills/dnd/display/push_stats.py --turn-current "Goblin 1" --turn-round 2
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --turn-current "Goblin 1" --turn-round 2
 
 # Combat ended:
-python3 ~/.claude/skills/dnd/display/push_stats.py --turn-clear
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --turn-clear
 
 # World time clock:
-python3 ~/.claude/skills/dnd/display/push_stats.py --world-time \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --world-time \
   '{"date":"19 Ashveil 1312 AR","day_name":"Moonday","time":"morning","season":"Long Hollow","weather":"calm"}'
 
 # Clear display (use push_stats.py, NOT curl — raw curl lacks the auth token in LAN mode):
-python3 ~/.claude/skills/dnd/display/push_stats.py --clear
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --clear
 
 # Autorun cycle countdown (shown in party input panel):
-python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-waiting true --autorun-cycle 60
-python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-waiting false   # hide after turn resolves
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --autorun-waiting true --autorun-cycle 60
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --autorun-waiting false   # hide after turn resolves
 
 # N-player threshold — auto-fire when N players (not all) are ready:
-python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-threshold 2   # fire when 2 ready
-python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-threshold 0   # reset to player count
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --autorun-threshold 2   # fire when 2 ready
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --autorun-threshold 0   # reset to player count
 ```
 
 **Player input queue — `display/check_input.py`:**
@@ -232,7 +234,7 @@ python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-threshold 0   # res
 # Called at the start of each turn BEFORE processing the player's message.
 # Drains any actions queued from the display companion (e.g. iPad) and prints them.
 # Output: "[Max of Thraxx]: I draw my rapier" — empty if nothing queued. Clears the display indicator.
-python3 ~/.claude/skills/dnd/display/check_input.py
+python3 ${CLAUDE_SKILL_DIR}/display/check_input.py
 ```
 
 If `check_input.py` returns output, prepend it to the player's terminal input when forming the turn:
@@ -271,32 +273,32 @@ CAMP=my-campaign
 
 # Timed effects — duration: 10r (rounds), 60m (minutes), 8h (hours), indef
 # Append 'conc' to mark as concentration (auto-sets concentration field)
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP effect start "Max of Thraxx" "Web" 10r conc
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP effect start "Ethros the 19th" "Disguise Self" 1h
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP effect start "Ethros the 19th" "Hunter's Mark" indef
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP effect end   "Max of Thraxx" "Web"   # narrative end (broken/dispelled)
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP effect tick  "Max of Thraxx"         # call on actor's turn — decrements rounds, prints expiry
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP effect start "Max of Thraxx" "Web" 10r conc
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP effect start "Ethros the 19th" "Disguise Self" 1h
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP effect start "Ethros the 19th" "Hunter's Mark" indef
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP effect end   "Max of Thraxx" "Web"   # narrative end (broken/dispelled)
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP effect tick  "Max of Thraxx"         # call on actor's turn — decrements rounds, prints expiry
 
 # Conditions
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP condition add "Ethros the 19th" poisoned
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP condition remove "Ethros the 19th" poisoned
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP condition clear "Ethros the 19th"
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP condition add "Ethros the 19th" poisoned
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP condition remove "Ethros the 19th" poisoned
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP condition clear "Ethros the 19th"
 
 # Concentration (auto-clears previous if switching spells)
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP concentrate "Max of Thraxx" "Bless"
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP concentrate "Max of Thraxx" break
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP concentrate "Max of Thraxx" "Bless"
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP concentrate "Max of Thraxx" break
 
 # Death saves
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP saves "Ethros the 19th" success
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP saves "Ethros the 19th" failure
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP saves "Ethros the 19th" stable
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP saves "Ethros the 19th" reset
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP saves "Ethros the 19th" success
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP saves "Ethros the 19th" failure
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP saves "Ethros the 19th" stable
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP saves "Ethros the 19th" reset
 
 # Status / clear
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP status
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP status "Ethros the 19th"
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP clear           # conditions + concentration + effects
-python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP clear --all     # also clears death saves
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP status
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP status "Ethros the 19th"
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP clear           # conditions + concentration + effects
+python3 ${CLAUDE_SKILL_DIR}/scripts/tracker.py -c $CAMP clear --all     # also clears death saves
 ```
 
 **When to run:** condition applied/removed; caster begins/loses concentration (immediately, not end of turn); PC drops to 0 HP; each death save rolled; end of encounter → `clear`.
@@ -306,7 +308,7 @@ python3 ~/.claude/skills/dnd/scripts/tracker.py -c $CAMP clear --all     # also 
 ## Calendar Script — `scripts/calendar.py`
 ```bash
 # One-time setup (run during /dnd new):
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP init \
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP init \
     --date "15 Harvestmoon 1247" \
     --time "morning" \
     --months "Frostfall,Deepwinter,Thawmonth,Seedtime,Bloomtide,Highsun,Harvestmoon,Duskfall" \
@@ -314,16 +316,16 @@ python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP init \
     --day-names "Sunday,Moonday,Ironday,Windday,Earthday,Fireday,Starday"
 
 # Time advancement
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP advance 8 hours
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP advance 2 days
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP rest short   # +1 hour
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP rest long    # +8 hours
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP advance 8 hours
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP advance 2 days
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP rest short   # +1 hour
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP rest long    # +8 hours
 
 # Query / manual set
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP now
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP set "22 Harvestmoon 1247" evening
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP time night
-python3 ~/.claude/skills/dnd/scripts/calendar.py -c $CAMP events
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP now
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP set "22 Harvestmoon 1247" evening
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP time night
+python3 ${CLAUDE_SKILL_DIR}/scripts/calendar.py -c $CAMP events
 ```
 
 **When to run:** after every rest; after significant travel or time skip; when manually updating `state.md` date — use `calendar.py set` to keep them in sync.
@@ -337,16 +339,16 @@ Keyword search across campaign files. Use this **before** loading full files int
 CAMP=my-campaign
 
 # Search all default files (state, log, archive, world, npcs):
-python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c $CAMP Lasswater
+python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_search.py -c $CAMP Lasswater
 
 # Narrow to specific files:
-python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c $CAMP "merchant letter" --files log,archive
+python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_search.py -c $CAMP "merchant letter" --files log,archive
 
 # Multi-keyword AND search:
-python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c $CAMP VARETH Kel
+python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_search.py -c $CAMP VARETH Kel
 
 # More context lines around each match:
-python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c $CAMP Harwick -C 6
+python3 ${CLAUDE_SKILL_DIR}/scripts/campaign_search.py -c $CAMP Harwick -C 6
 ```
 
 File keys: `state`, `log`, `archive`, `world`, `seeds`, `npcs`, `npcsfull`
@@ -358,22 +360,22 @@ Default files searched: state, log, archive, world, npcs
 
 ## Data Commands — `scripts/sync_srd.py`, `scripts/build_srd.py`, and `scripts/lookup.py`
 
-Dataset is bundled at `~/.claude/skills/dnd/data/dnd5e_srd.json`. No runtime download required.
+Dataset is bundled at `${CLAUDE_SKILL_DIR}/data/dnd5e_srd.json`. No runtime download required.
 
 ```bash
 # Check / rebuild dataset (only needed when upstream sources update):
-python3 ~/.claude/skills/dnd/scripts/sync_srd.py             # rebuild if 5e-bits or FoundryVTT has new commits
-python3 ~/.claude/skills/dnd/scripts/sync_srd.py --check     # check upstream SHAs, don't rebuild
-python3 ~/.claude/skills/dnd/scripts/sync_srd.py --force     # always rebuild
-python3 ~/.claude/skills/dnd/scripts/build_srd.py --status   # show current dataset metadata
+python3 ${CLAUDE_SKILL_DIR}/scripts/sync_srd.py             # rebuild if 5e-bits or FoundryVTT has new commits
+python3 ${CLAUDE_SKILL_DIR}/scripts/sync_srd.py --check     # check upstream SHAs, don't rebuild
+python3 ${CLAUDE_SKILL_DIR}/scripts/sync_srd.py --force     # always rebuild
+python3 ${CLAUDE_SKILL_DIR}/scripts/build_srd.py --status   # show current dataset metadata
 
 # Lookup during play (CLI):
-python3 ~/.claude/skills/dnd/scripts/lookup.py spell "fireball"
-python3 ~/.claude/skills/dnd/scripts/lookup.py item "cloak of protection"
-python3 ~/.claude/skills/dnd/scripts/lookup.py feature "sneak attack"
-python3 ~/.claude/skills/dnd/scripts/lookup.py condition "poisoned"
-python3 ~/.claude/skills/dnd/scripts/lookup.py monster "goblin"
-python3 ~/.claude/skills/dnd/scripts/lookup.py monster "dragon" --all   # all fuzzy matches
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py spell "fireball"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py item "cloak of protection"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py feature "sneak attack"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py condition "poisoned"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py monster "goblin"
+python3 ${CLAUDE_SKILL_DIR}/scripts/lookup.py monster "dragon" --all   # all fuzzy matches
 
 # Programmatic (used by display companion /srd-lookup endpoint):
 from lookup import lookup, lookup_record, lookup_with_level
@@ -388,7 +390,7 @@ lookup_with_level("sneak attack", category="feature", level=3)  # → level-reso
 ## Display Companion Setup (one-time)
 
 ```bash
-cd ~/.claude/skills/dnd/display
+cd ${CLAUDE_SKILL_DIR}/display
 pip3 install -r requirements.txt
 ```
 
@@ -402,8 +404,8 @@ Browser tab → Chromecast → TV
 
 **Start the display:**
 ```bash
-bash ~/.claude/skills/dnd/display/start-display.sh          # localhost
-bash ~/.claude/skills/dnd/display/start-display.sh --lan    # LAN mode (phones, tablets)
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh          # localhost
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh --lan    # LAN mode (phones, tablets)
 open https://localhost:5001                                  # open browser before /dnd load
 ```
 
