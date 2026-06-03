@@ -6,7 +6,7 @@ Sources:
   • 5e-bits/5e-database  (MIT + OGL)    — spells, equipment, magic items, conditions, monsters
   • foundryvtt/dnd5e     (MIT + CC-BY-4.0) — class features, racial traits (2024 SRD)
 
-Output: ~/.claude/skills/dnd/data/dnd5e_srd.json
+Output: data/dnd5e_srd.json
 
 Usage:
     python3 build_srd.py             # build/rebuild the dataset

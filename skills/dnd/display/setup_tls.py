@@ -5,13 +5,13 @@ display companion.
 
 Run this once, or any time your LAN IP changes:
 
-    python3 ~/.claude/skills/dnd/display/setup_tls.py
+    python3 setup_tls.py
 
 Produces cert.pem + key.pem in the same directory.
 SANs cover: localhost, 127.0.0.1, and the current LAN IP (en0 / en1 / wlan0).
 
 After regenerating, restart the display:
-    bash ~/.claude/skills/dnd/display/start-display.sh
+    bash start-display.sh
 """
 
 import ipaddress

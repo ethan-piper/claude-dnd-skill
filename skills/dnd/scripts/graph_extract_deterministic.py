@@ -30,7 +30,7 @@ except ImportError:
 
 _SKILL_ROOT = pathlib.Path(__file__).resolve().parent.parent
 # Public repo layout (claude-dnd-skill repo) puts the seed under data/graph/.
-# The live skill (~/.claude/skills/dnd/) keeps it at data/. Look in both.
+# The skill keeps it at data/. Look in both.
 _VERB_TABLE_CANDIDATES = (
     _SKILL_ROOT / "data" / "graph" / "verb_table_seed.yaml",
     _SKILL_ROOT / "data" / "verb_table_seed.yaml",

@@ -2,7 +2,7 @@
 """
 external_corpus_extract.py — Batched verb extraction over collected corpus.
 
-Reads .md posts from ~/.claude/skills/dnd/data/external-corpus/, batches them
+Reads .md posts from data/external-corpus/, batches them
 ~10 per Haiku call (to amortize the ~5-min latency), and aggregates verb-frequency
 counts across the corpus. Output is verb stats only — does NOT write to graph.json.
 
@@ -11,7 +11,7 @@ verbs that appear consistently across diverse public D&D narrative.
 
 Usage:
     python3 external_corpus_extract.py \\
-        --corpus-dir ~/.claude/skills/dnd/data/external-corpus \\
+        --corpus-dir data/external-corpus \\
         --top-n 50 \\
         --batch-size 10 \\
         --out /tmp/external-verb-stats.json

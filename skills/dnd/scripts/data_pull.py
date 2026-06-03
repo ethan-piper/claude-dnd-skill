@@ -3,12 +3,12 @@
 data_pull.py — fetch 5e SRD data files from 5e-bits/5e-database
 
 Downloads five targeted JSON datasets from the open 5e-bits/5e-database repo
-(MIT + OGL licensed) and saves them to ~/.claude/skills/dnd/data/.
+(MIT + OGL licensed) and saves them to data/.
 
 Usage:
-    python3 ~/.claude/skills/dnd/scripts/data_pull.py           # skip files that exist
-    python3 ~/.claude/skills/dnd/scripts/data_pull.py --force   # re-download everything
-    python3 ~/.claude/skills/dnd/scripts/data_pull.py --status  # show what's installed
+    python3 data_pull.py           # skip files that exist
+    python3 data_pull.py --force   # re-download everything
+    python3 data_pull.py --status  # show what's installed
 """
 
 import json

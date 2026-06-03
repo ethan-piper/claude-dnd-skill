@@ -22,7 +22,7 @@ Terminal (you type here — claude runs directly, no wrapper needed)
 ### 1. Install dependencies
 
 ```bash
-cd ~/.claude/skills/dnd/display
+cd ${CLAUDE_SKILL_DIR}/display
 pip3 install -r requirements.txt
 ```
 
@@ -30,13 +30,13 @@ pip3 install -r requirements.txt
 
 ```bash
 # Localhost only (default) — HTTP, auto-kills any previous instance
-bash ~/.claude/skills/dnd/display/start-display.sh
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh
 
 # LAN mode — HTTP, accessible from phones, tablets, other devices on your network
-bash ~/.claude/skills/dnd/display/start-display.sh --lan
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh --lan
 
 # LAN mode with TLS — HTTPS, for public or untrusted networks
-bash ~/.claude/skills/dnd/display/start-display.sh --lan --tls
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh --lan --tls
 ```
 
 **HTTP is the default.** No certificate warnings — guests and new devices connect instantly
@@ -257,7 +257,7 @@ The Sound Effects toggle in the top-right corner of the display enables/disables
 ## Quick reference
 
 ```bash
-DISPLAY=~/.claude/skills/dnd/display
+DISPLAY=${CLAUDE_SKILL_DIR}/display
 
 # Start the display (force-kills any previous instance)
 bash $DISPLAY/start-display.sh

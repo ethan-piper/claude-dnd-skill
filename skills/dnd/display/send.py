@@ -14,7 +14,7 @@ Usage:
     DNDEND
 
     # Dice result — pipe from dice.py for open rolls
-    python3 ~/.claude/skills/dnd/scripts/dice.py d20+4 | python3 send.py --dice
+    python3 ../scripts/dice.py d20+4 | python3 send.py --dice
 
     # NPC dialogue — amber border, italic, amber name header
     python3 send.py --npc "Vesna" << 'DNDEND'

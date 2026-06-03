@@ -6,7 +6,7 @@ Prints any pending player input from the display panel to stdout, then clears
 the queue. If the queue is empty, prints nothing and exits 0.
 
 Called by the DM at the start of each turn when the display companion is running:
-  python3 ~/.claude/skills/dnd/display/check_input.py
+  python3 ${CLAUDE_SKILL_DIR}/display/check_input.py
 
 Output format (when non-empty):
   [CharName]: action text

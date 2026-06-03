@@ -20,13 +20,13 @@ Usage:
         --time year \\
         --sort top \\
         --limit 50 \\
-        --out-dir ~/.claude/skills/dnd/data/external-corpus/dmacademy
+        --out-dir data/external-corpus/dmacademy
 
     python3 external_corpus_collect.py \\
         --subreddit CritCrab \\
         --time all \\
         --limit 50 \\
-        --out-dir ~/.claude/skills/dnd/data/external-corpus/critcrab
+        --out-dir data/external-corpus/critcrab
 
 Output: one .md per accepted post + summary log.
 """

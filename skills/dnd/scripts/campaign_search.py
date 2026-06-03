@@ -8,9 +8,9 @@ Usage:
     python3 campaign_search.py -c <campaign> <keyword> -C 4   # context lines (default 3)
 
 Examples:
-    python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c my-campaign dragon
-    python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c my-campaign Vael letter --files log,archive
-    python3 ~/.claude/skills/dnd/scripts/campaign_search.py -c test-campaign VARETH Kel
+    python3 campaign_search.py -c my-campaign dragon
+    python3 campaign_search.py -c my-campaign Vael letter --files log,archive
+    python3 campaign_search.py -c test-campaign VARETH Kel
 
 Returns: file name, nearest section heading, and matching lines with context.
 Case-insensitive. Multiple keywords = AND (all must appear within the same block).
