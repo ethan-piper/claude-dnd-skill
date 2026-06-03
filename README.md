@@ -110,17 +110,38 @@ The Flask server receives narration text, player actions, dice results, and char
 
 ## Installation
 
-```bash
-# 1. Clone into your Claude skills directory
-git clone https://github.com/Bobby-Gray/claude-dnd-skill ~/.claude/skills/dnd
+### Option A — install as a Claude Code plugin (recommended)
 
-# 2. Install display companion dependencies (optional)
-pip3 install flask flask-cors numpy cryptography
-
-# 3. That's it — no other setup required
+```
+/plugin marketplace add ethan-piper/claude-dnd-skill
+/plugin install dnd@ethan-piper
 ```
 
-> **Claude Code skills** live in `~/.claude/skills/`. Once cloned, the `/dnd` command is available in any Claude Code session.
+Then invoke it as **`/dnd:dnd`** (plugin skills are namespaced `plugin:skill`), or just describe what you want once a campaign is loaded. Update with `/plugin update dnd`.
+
+```bash
+# Optional — install the display-companion dependencies (one-time).
+# Core gameplay works without these; they power the live screen + audio.
+pip3 install flask flask-cors numpy cryptography
+```
+
+### Option B — manual install as a standalone skill
+
+```bash
+git clone https://github.com/ethan-piper/claude-dnd-skill /tmp/claude-dnd-skill
+cp -R /tmp/claude-dnd-skill/skills/dnd ~/.claude/skills/dnd
+pip3 install flask flask-cors numpy cryptography   # optional (display)
+```
+
+Invoked as `/dnd`. Update with `/dnd update` (fast-forward git pull).
+
+> **Migrating from an older standalone install?** Earlier versions placed the
+> skill files at the repo root and you cloned the whole repo to `~/.claude/skills/dnd`.
+> This version nests everything under `skills/dnd/`. If you install the **plugin**,
+> first remove the old standalone copy to avoid a duplicate `/dnd`:
+> `rm -rf ~/.claude/skills/dnd`. **Your campaigns and characters are untouched** —
+> they live under `~/.claude/dnd/` (or `$DND_CAMPAIGN_ROOT`), entirely separate
+> from the skill code, and survive any reinstall.
 
 ---
 
@@ -135,7 +156,9 @@ The skill tracks releases via a top-level `VERSION` file and per-release notes i
 /dnd update            # pulls if you're behind (fast-forward only; refuses on dirty tree)
 ```
 
-The `--check` output now includes both sides' version strings so you can see at a glance whether you've fallen behind. After pulling, restart Claude Code so the new `SKILL.md` and command procedures load.
+**Plugin installs update through the plugin manager** — run `/plugin update dnd` instead. `/dnd update` detects a plugin install and points you there rather than git-pulling under the manager's tracked state.
+
+The `--check` output includes both sides' version strings so you can see at a glance whether you've fallen behind. After updating, restart Claude Code so the new `SKILL.md` and command procedures load.
 
 The skill follows [semantic versioning](https://semver.org/): `MAJOR.MINOR.PATCH`. Breaking changes that require campaign-data migration bump MAJOR; new opt-in features bump MINOR; bug fixes bump PATCH. Active campaigns continue to work across MINOR/PATCH bumps without action.
 
@@ -321,13 +344,13 @@ The display starts automatically when you answer **y** at the `/dnd load` prompt
 
 ```bash
 # Local only (Mac/same machine) — HTTP, no cert setup
-bash ~/.claude/skills/dnd/display/start-display.sh
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh
 
 # LAN mode — HTTP, accessible to phones/tablets on your network
-bash ~/.claude/skills/dnd/display/start-display.sh --lan
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh --lan
 
 # LAN mode with TLS — for public or untrusted networks
-bash ~/.claude/skills/dnd/display/start-display.sh --lan --tls
+bash ${CLAUDE_SKILL_DIR}/display/start-display.sh --lan --tls
 ```
 
 Then open `http://localhost:5001` in your browser. HTTP is the default — no certificate warnings. For LAN devices use the IP URL printed at startup (e.g. `http://192.168.1.x:5001`). Use `--tls` only when the network is public or untrusted.
@@ -381,8 +404,8 @@ The countdown is configurable per-campaign by setting `autorun_interval: N` in `
 **N-player threshold** — by default autorun fires when all known players are ready. For multi-device groups you can require only N players:
 
 ```bash
-python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-threshold 2  # fire when 2 ready
-python3 ~/.claude/skills/dnd/display/push_stats.py --autorun-threshold 0  # reset to player count
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --autorun-threshold 2  # fire when 2 ready
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --autorun-threshold 0  # reset to player count
 ```
 
 ### DM Help & Tutor Mode
@@ -451,7 +474,7 @@ A canvas layer rendered above the scene background shows a live sky that reacts 
 Push world time data after loading a campaign and after any rest or time advance:
 
 ```bash
-python3 ~/.claude/skills/dnd/display/push_stats.py --world-time \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --world-time \
   '{"date":"7 Deepmonth 1312 CR","day_name":"Starday","time":"morning","season":"Deep Winter","weather":"overcast"}'
 ```
 
@@ -492,7 +515,7 @@ A fixed left sidebar shows live stats for all party members, updated automatical
 
 ```bash
 # Push full stats on campaign load (clears stale characters from previous campaigns)
-python3 ~/.claude/skills/dnd/display/push_stats.py --replace-players --json '{
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --replace-players --json '{
   "players": [{
     "name": "Aldric", "race": "Human", "class": "Fighter", "level": 2,
     "hp": {"current": 14, "max": 18}, "xp": {"current": 220, "next": 300},
@@ -507,13 +530,13 @@ python3 ~/.claude/skills/dnd/display/push_stats.py --replace-players --json '{
 }'
 
 # Partial updates during play
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Aldric --hp 10 18
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Aldric --xp 270 300
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Aldric --conditions-add "Poisoned"
-python3 ~/.claude/skills/dnd/display/push_stats.py --player Aldric --slot-use 2
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Aldric --hp 10 18
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Aldric --xp 270 300
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Aldric --conditions-add "Poisoned"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --player Aldric --slot-use 2
 
 # Or bundle stat changes directly with a narration send (no separate push_stats.py call needed):
-python3 ~/.claude/skills/dnd/display/send.py \
+python3 ${CLAUDE_SKILL_DIR}/display/send.py \
   --stat-hp "Aldric:10:18" \
   --stat-condition-add "Aldric:Poisoned" \
   --stat-slot-use "Aldric:1" << 'EOF'
@@ -521,17 +544,17 @@ The goblin's blade catches Aldric across the ribs...
 EOF
 
 # Combat turn order
-python3 ~/.claude/skills/dnd/display/push_stats.py \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py \
   --turn-order '{"order":["Aldric","Skeleton","Mira"],"current":"Aldric","round":1}'
 
 # Advance turn pointer
-python3 ~/.claude/skills/dnd/display/push_stats.py --turn-current "Skeleton"
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --turn-current "Skeleton"
 
 # Combat ended
-python3 ~/.claude/skills/dnd/display/push_stats.py --turn-clear
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --turn-clear
 
 # World time clock
-python3 ~/.claude/skills/dnd/display/push_stats.py --world-time \
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --world-time \
   '{"date":"7 Deepmonth 1312 CR","day_name":"Starday","time":"morning","season":"Deep Winter","weather":"overcast"}'
 ```
 
@@ -546,7 +569,7 @@ Click or tap any character card in the sidebar to open a full character sheet mo
 Include the `sheet` field when pushing stats on `/dnd load` to populate the full sheet:
 
 ```bash
-python3 ~/.claude/skills/dnd/display/push_stats.py --replace-players --json '{
+python3 ${CLAUDE_SKILL_DIR}/display/push_stats.py --replace-players --json '{
   "players": [{
     "name": "Aldric",
     ...
@@ -568,7 +591,7 @@ If `sheet` is omitted, the modal still opens but shows only the stats visible in
 Clicking a spell or feature name inside the sheet opens a description modal sourced from the bundled SRD dataset. Scaling progressions (e.g. Sneak Attack damage) automatically collapse to the character's current level. If a spell or feature isn't in the core SRD dataset, a link to the relevant page on D&D 5e Wiki is shown instead. To extend the local dataset with non-SRD content from a character file:
 
 ```bash
-python3 ~/.claude/skills/dnd/scripts/build_supplemental.py --character ~/.claude/dnd/campaigns/<name>/characters/<charname>.md
+python3 ${CLAUDE_SKILL_DIR}/scripts/build_supplemental.py --character ~/.claude/dnd/campaigns/<name>/characters/<charname>.md
 ```
 
 This fetches descriptions from dnd5e.wikidot.com for any missing entries and writes them to `data/dnd5e_supplemental.json`. Run it once after creating or importing a character. A pre-built supplemental covering Circle of Spores, Thief archetype features, and several Xanathar's spells ships with the skill.
@@ -591,7 +614,7 @@ The server buffers the last 60 text chunks to disk (`text_log.json`). Reconnecti
 
 ## Scripts Reference
 
-All scripts live in `~/.claude/skills/dnd/scripts/`.
+All scripts live in `${CLAUDE_SKILL_DIR}/scripts/`.
 
 ### `dice.py` — All dice rolls
 
@@ -679,7 +702,7 @@ python3 scripts/character.py xp --level 2 --gained 150
 ## File Layout
 
 ```
-~/.claude/skills/dnd/
+${CLAUDE_SKILL_DIR}/
 ├── SKILL.md                  # Skill definition and DM instructions
 ├── SKILL-scripts.md          # Script and tool syntax reference
 ├── SKILL-commands.md         # /dnd command procedures
