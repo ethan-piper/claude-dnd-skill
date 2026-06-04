@@ -26,7 +26,7 @@ There are two ways to play, and they serve different needs:
 
 **Structured campaigns** — Use `/dnd import` to drop in a pre-written source (official WotC modules, published third-party campaigns, or a custom DM-written document in PDF, markdown, DOCX, or plain text format). Claude reads and chunks the source, extracts the structure type (linear, hub-and-spoke, or faction-web), and builds all campaign files automatically — acts, chapters, key story beats, telegraph scenes, NPCs, factions, locations, and quest hooks. The campaign runs with enforced deterministic structure: required beats must land in each chapter, Claude telegraphs before delivering them, and steers with world pressure rather than walls when players drift. Drop in the Lost Mine of Phandelver and Claude will run it chapter by chapter with the same twelve DM standards applied to every scene.
 
-Both modes share the same DM engine. The [twelve applied behavioral standards](https://github.com/Bobby-Gray/claude-dnd-skill/blob/main/SKILL.md#what-makes-a-great-dm--applied-standards) are enforced as hard constraints in every session regardless of which mode you're in — improvised or structured, the DM improvises within situations, lets choices matter, makes every NPC a person, and controls pace deliberately.
+Both modes share the same DM engine. The [twelve applied behavioral standards](https://github.com/neuralinitiative/claude-dnd-skill/blob/main/SKILL.md#what-makes-a-great-dm--applied-standards) are enforced as hard constraints in every session regardless of which mode you're in — improvised or structured, the DM improvises within situations, lets choices matter, makes every NPC a person, and controls pace deliberately.
 
 It also manages a deep web of campaign data without overloading the LLM — coherent and complete, without burning tokens on context that isn't needed yet:
 
@@ -43,7 +43,7 @@ It is not an official Wizards of the Coast product. It uses Claude as the DM eng
 
 ## Using a different LLM?
 
-This skill is built specifically for Claude Code. If you want to run the same framework on a different model — local inference, OpenRouter, or any OpenAI-compatible endpoint — check out [open-tabletop-gm](https://github.com/Bobby-Gray/open-tabletop-gm), the model-agnostic version extracted from this repo. It trades some Claude-specific integration depth for broader model support and includes a probe tool for benchmarking narration quality across models.
+This skill is built specifically for Claude Code. If you want to run the same framework on a different model — local inference, OpenRouter, or any OpenAI-compatible endpoint — check out [open-tabletop-gm](https://github.com/neuralinitiative/open-tabletop-gm), the model-agnostic version extracted from this repo. It trades some Claude-specific integration depth for broader model support and includes a probe tool for benchmarking narration quality across models.
 
 If you'd rather skip the install entirely and play in a browser, [neuralinitiative.ai](https://neuralinitiative.ai) is the hosted version — same design DNA, sign in with Google, top up an account balance, play. Trades self-hosting (and lower per-session cost) for zero setup and a more refined GUI.
 
@@ -113,8 +113,8 @@ The Flask server receives narration text, player actions, dice results, and char
 ### Option A — install as a Claude Code plugin (recommended)
 
 ```
-/plugin marketplace add ethan-piper/claude-dnd-skill
-/plugin install dm@ethan-piper
+/plugin marketplace add neuralinitiative/claude-dnd-skill
+/plugin install dm@neural-initiative
 ```
 
 Then invoke it as **`/dm:dnd`** (plugin skills are namespaced `plugin:skill` — the `dm` plugin provides the `dnd` skill), or just describe what you want once a campaign is loaded. Update with `/plugin update dm`.
@@ -128,7 +128,7 @@ pip3 install flask flask-cors numpy cryptography
 ### Option B — manual install as a standalone skill
 
 ```bash
-git clone https://github.com/ethan-piper/claude-dnd-skill /tmp/claude-dnd-skill
+git clone https://github.com/neuralinitiative/claude-dnd-skill /tmp/claude-dnd-skill
 cp -R /tmp/claude-dnd-skill/skills/dnd ~/.claude/skills/dnd
 pip3 install flask flask-cors numpy cryptography   # optional (display)
 ```

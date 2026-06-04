@@ -88,7 +88,7 @@ def main() -> int:
               file=sys.stderr)
         print(
             "If you installed manually, reinstall via:\n"
-            "    git clone https://github.com/ethan-piper/claude-dnd-skill\n"
+            "    git clone https://github.com/neuralinitiative/claude-dnd-skill\n"
             "or install it as a plugin (see README).",
             file=sys.stderr,
         )
