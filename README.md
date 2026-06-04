@@ -110,7 +110,7 @@ The Flask server receives narration text, player actions, dice results, and char
 
 ## Installation
 
-### Option A — install as a Claude Code plugin (recommended)
+Install it as a Claude Code plugin:
 
 ```
 /plugin marketplace add neuralinitiative/claude-dnd-skill
@@ -125,23 +125,14 @@ Then invoke it as **`/dm:dnd`** (plugin skills are namespaced `plugin:skill` —
 pip3 install flask flask-cors numpy cryptography
 ```
 
-### Option B — manual install as a standalone skill
-
-```bash
-git clone https://github.com/neuralinitiative/claude-dnd-skill /tmp/claude-dnd-skill
-cp -R /tmp/claude-dnd-skill/skills/dnd ~/.claude/skills/dnd
-pip3 install flask flask-cors numpy cryptography   # optional (display)
-```
-
-Invoked as `/dnd`. Update with `/dnd update` (fast-forward git pull).
-
-> **Migrating from an older standalone install?** Earlier versions placed the
-> skill files at the repo root and you cloned the whole repo to `~/.claude/skills/dnd`.
-> This version nests everything under `skills/dnd/`. If you install the **plugin**,
-> first remove the old standalone copy to avoid a duplicate `/dnd`:
-> `rm -rf ~/.claude/skills/dnd`. **Your campaigns and characters are untouched** —
-> they live under `~/.claude/dnd/` (or `$DND_CAMPAIGN_ROOT`), entirely separate
-> from the skill code, and survive any reinstall.
+> **Upgrading from a v1 standalone install?** As of v2.0.0 the skill is
+> plugin-only — the old `~/.claude/skills/dnd` standalone (`/dnd`) is replaced by
+> the plugin (`/dm:dnd`). **Your campaigns and characters are untouched** — they
+> live under `~/.claude/dnd/` (or `$DND_CAMPAIGN_ROOT`), entirely separate from
+> the skill code. Install the plugin above, then run the one-time helper to carry
+> over device pairings / TLS certs and retire the old install:
+> `python3 <plugin>/skills/dnd/scripts/migrate_v1_to_v2.py`. Full guide:
+> **[MIGRATING.md](MIGRATING.md)**.
 
 ---
 
