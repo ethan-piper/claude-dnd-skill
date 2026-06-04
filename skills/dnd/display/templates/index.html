@@ -3163,7 +3163,7 @@
 
   /* B1 — party rail fills full height; the d20 logo nests in its top */
   :root[data-skin="editorial"] body:not(.input-only) #sidebar{
-    top:0; bottom:0; height:100vh; padding-top:108px; }
+    top:0; bottom:0; height:100vh; padding-top:108px; padding-bottom:30px; }
   :root[data-skin="editorial"] body:not(.input-only) #corner-logo{
     top:26px; left:30px; width:60px; height:60px; opacity:.95; z-index:33; }
 
@@ -3206,6 +3206,42 @@
   /* F — Party Input drawer composer fills the abundant vertical space */
   :root[data-skin="editorial"] body:not(.input-only) #input-panel #player-input-text{
     min-height:240px; padding:18px; font-size:16px; line-height:1.5; }
+
+  /* SRD lookup modal themed (mirrors the sheet modal) */
+  :root[data-skin="editorial"] #srd-modal{ background:rgba(0,0,0,.55); }
+  :root[data-skin="editorial"] #srd-panel{
+    background:var(--e-canvas); color:var(--e-ink);
+    border:1px solid var(--e-hair-strong); border-radius:4px;
+    box-shadow:0 30px 90px rgba(0,0,0,.5); }
+  :root[data-skin="editorial"] #srd-category-badge{
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.28em; color:var(--e-accent); }
+  :root[data-skin="editorial"] #srd-body{ font-family:'Newsreader',serif; color:var(--e-ink); }
+  :root[data-skin="editorial"] #srd-body .srd-title{
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.06em; color:var(--e-ink); }
+  :root[data-skin="editorial"] #srd-body .srd-meta{ font-family:'Newsreader',serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-body strong{ color:var(--e-accent-ink); }
+  :root[data-skin="editorial"] #srd-loading{ font-family:'Syne',sans-serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-not-found{ font-family:'Newsreader',serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-close{ color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-close:hover{ color:var(--e-accent); }
+
+  /* Party rail — Factions / Quests ("DM notes"). Headers/names re-typed to the
+     editorial system; the semantic standing/status colors are left intact. */
+  :root[data-skin="editorial"] body:not(.input-only) #sb-factions,
+  :root[data-skin="editorial"] body:not(.input-only) #sb-quests{
+    border-top:1px solid var(--e-hair-strong); margin-top:16px; padding-top:14px; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-factions-header,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quests-header{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:9px; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--e-accent); opacity:1; margin-bottom:9px; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-faction-item,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quest-item{ padding:4px 0; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-faction-name,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quest-name{
+    font-family:'Newsreader',serif; font-size:13px; color:var(--e-on-strong); opacity:.82; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-faction-standing,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quest-status{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:8.5px; letter-spacing:.1em; }
 
   /* ══ Phone display-settings popover (#phone-settings) — both skins, phone only ══ */
   #phone-settings{ display:none; }
