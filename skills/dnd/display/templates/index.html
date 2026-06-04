@@ -24,6 +24,11 @@
         document.documentElement.setAttribute('data-theme', v);
       }
       // 'auto' or missing → leave the attribute off; CSS @media handles it.
+      // Skin axis: "vellum" (default, attr absent) or "editorial" (Colossal redesign).
+      var sk = window.localStorage.getItem('dnd-skin');
+      if (sk === 'editorial') {
+        document.documentElement.setAttribute('data-skin', 'editorial');
+      }
     } catch (_) { /* private mode / disabled storage — silently fall back to dark */ }
   })();
 </script>
@@ -32,6 +37,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<!-- Editorial skin fonts (Colossal redesign) — loaded always, used only under data-skin="editorial" -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
 <link rel="icon" type="image/x-icon"  href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32"  href="/icons/app_icon_32.png">
 <link rel="apple-touch-icon" sizes="180x180"      href="/icons/app_icon_180.png">
@@ -2875,6 +2882,436 @@
     }
     :root:not([data-theme]) #dice-pending-badge .dpb-label { color: rgba(110, 75, 20, 0.85); }
   }
+  /* ════════════════════════════════════════════════════════════════════
+     EDITORIAL SKIN  ·  data-skin="editorial"  (Colossal-inspired redesign)
+     Reuses the theme axis: (dark/auto-dark) = Dark, [data-theme="light"]
+     /auto-light = Bold. "strong" vars drive the chrome (party rail, scene
+     kicker); plain vars drive the reading content. Overrides the vellum
+     base by specificity + source order.
+     ════════════════════════════════════════════════════════════════════ */
+  :root[data-skin="editorial"]{
+    --e-canvas:#16130E; --e-ink:#E3DCCB; --e-mut:rgba(237,230,214,.55);
+    --e-accent:#FF7A2D; --e-accent-ink:#FF9A55; --e-dice-text:#16130E;
+    --e-block:#221C16; --e-on-block:#EDE6D6; --e-hair:rgba(237,230,214,.16); --e-track:rgba(237,230,214,.14);
+    --e-strong:#221C16; --e-on-strong:#EDE6D6; --e-hair-strong:rgba(237,230,214,.16); --e-track-strong:rgba(237,230,214,.14);
+  }
+  :root[data-skin="editorial"][data-theme="light"]{
+    --e-canvas:#F3EFE4; --e-ink:#14110C; --e-mut:rgba(20,17,12,.6);
+    --e-accent:#E5481E; --e-accent-ink:#C23A14; --e-dice-text:#F3EFE4;
+    --e-block:#FBF8F0; --e-on-block:#14110C; --e-hair:rgba(20,17,12,.16); --e-track:rgba(20,17,12,.14);
+    --e-strong:#14110C; --e-on-strong:#F3EFE4; --e-hair-strong:rgba(243,239,228,.22); --e-track-strong:rgba(243,239,228,.22);
+  }
+  @media (prefers-color-scheme: light){
+    :root[data-skin="editorial"]:not([data-theme]){
+      --e-canvas:#F3EFE4; --e-ink:#14110C; --e-mut:rgba(20,17,12,.6);
+      --e-accent:#E5481E; --e-accent-ink:#C23A14; --e-dice-text:#F3EFE4;
+      --e-block:#FBF8F0; --e-on-block:#14110C; --e-hair:rgba(20,17,12,.16); --e-track:rgba(20,17,12,.14);
+      --e-strong:#14110C; --e-on-strong:#F3EFE4; --e-hair-strong:rgba(243,239,228,.22); --e-track-strong:rgba(243,239,228,.22);
+    }
+  }
+
+  /* canvas + retire the vellum chrome */
+  :root[data-skin="editorial"] body{ background:var(--e-canvas); color:var(--e-ink); font-family:'Newsreader',Georgia,serif; }
+  :root[data-skin="editorial"] .bg-layer,
+  :root[data-skin="editorial"] #vignette,
+  :root[data-skin="editorial"] #frame,
+  :root[data-skin="editorial"] #sky,
+  :root[data-skin="editorial"] #particles{ display:none !important; }
+
+  /* scene kicker */
+  :root[data-skin="editorial"] #scene-indicator{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:12px; letter-spacing:.34em; color:var(--e-accent); }
+
+  /* reading column */
+  /* reading area fills the width between the party rail and the launcher rail; flat (no parchment card) */
+  :root[data-skin="editorial"] body:not(.input-only) #text-scroll{ padding:84px 132px 88px 252px; }
+  :root[data-skin="editorial"] body:not(.input-only) #text-scroll.sidebar-hidden{ padding-left:80px; }
+  :root[data-skin="editorial"] #text-content{
+    max-width:1180px; margin:0 auto 0 0;
+    background:none !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; padding:0 !important; }
+  :root[data-skin="editorial"] .dm-block p{
+    color:var(--e-ink); text-shadow:none; font-family:'Newsreader',serif; font-size:1.02em; line-height:1.6; }
+  :root[data-skin="editorial"] .dm-block p em{ color:var(--e-accent-ink); font-style:italic; }
+
+  /* NPC dialogue — the hero pull-quote, large & legible */
+  :root[data-skin="editorial"] .npc-block{ border-left:4px solid var(--e-accent); padding-left:1.1em; }
+  :root[data-skin="editorial"] .npc-name{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:12px; letter-spacing:.18em; color:var(--e-accent); }
+  :root[data-skin="editorial"] .npc-block p,
+  :root[data-skin="editorial"] .npc-block p em{
+    color:var(--e-ink); font-family:'Newsreader',serif; font-style:italic; font-weight:500;
+    font-size:1.5em; line-height:1.26; text-shadow:none; }
+
+  /* player action */
+  :root[data-skin="editorial"] .player-block{ border-left:4px solid color-mix(in srgb, var(--e-accent) 45%, transparent); padding-left:1.1em; }
+  :root[data-skin="editorial"] .player-name{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:11px; letter-spacing:.16em; color:var(--e-mut); }
+  :root[data-skin="editorial"] .player-block p{ color:var(--e-ink); opacity:.85; font-family:'Newsreader',serif; text-shadow:none; }
+
+  /* action intent */
+  :root[data-skin="editorial"] .action-tag{ font-family:'Syne',sans-serif; font-weight:700; color:var(--e-mut); }
+  :root[data-skin="editorial"] .action-block p{ color:var(--e-ink); opacity:.6; text-shadow:none; }
+
+  /* dice — accent banner */
+  :root[data-skin="editorial"] .dice-result{
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.04em; font-size:13px;
+    color:var(--e-dice-text); background:var(--e-accent); border:0; border-radius:0; text-shadow:none; padding:.42em 1.1em; }
+
+  /* world clock */
+  :root[data-skin="editorial"] #world-clock,
+  :root[data-skin="editorial"] #wc-date,
+  :root[data-skin="editorial"] #wc-sub{ font-family:'Syne',sans-serif; color:var(--e-ink); }
+  :root[data-skin="editorial"] #ruleset-badge{ font-family:'Syne',sans-serif; color:var(--e-accent); }
+
+  /* party rail (sidebar) = strong chrome */
+  :root[data-skin="editorial"] #sidebar{ background:var(--e-strong); color:var(--e-on-strong); border-right:1px solid var(--e-hair-strong); }
+  :root[data-skin="editorial"] .sb-player{ border-bottom:1px solid var(--e-hair-strong); }
+  :root[data-skin="editorial"] .sb-name{ font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.06em; color:var(--e-on-strong); }
+  :root[data-skin="editorial"] .sb-identity{ color:var(--e-on-strong); opacity:.55; }
+  :root[data-skin="editorial"] .sb-label{ font-family:'Syne',sans-serif; color:var(--e-accent); }
+  :root[data-skin="editorial"] .sb-hp-nums{ font-family:'Syne',sans-serif; color:var(--e-on-strong); }
+  :root[data-skin="editorial"] .sb-bar-track{ background:var(--e-track-strong); border:0; }
+  :root[data-skin="editorial"] .sb-bar-fill{ background:var(--e-accent); }
+  :root[data-skin="editorial"] #sidebar-toggle{ font-family:'Syne',sans-serif; color:var(--e-accent); }
+
+  /* ── Layer 2: bottom input panel + dice pad = strong chrome (matches party rail / phone footer) ── */
+  :root[data-skin="editorial"] #input-panel{
+    background:var(--e-strong); color:var(--e-on-strong);
+    border:1px solid var(--e-hair-strong); border-radius:3px;
+    box-shadow:0 -2px 40px rgba(0,0,0,.28); }
+  :root[data-skin="editorial"] #input-panel:focus-within{ border-color:var(--e-accent); }
+  :root[data-skin="editorial"] #input-panel-label{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:9px; letter-spacing:.28em; color:var(--e-accent); }
+  :root[data-skin="editorial"] #input-badge{
+    font-family:'Syne',sans-serif; font-weight:700; color:var(--e-dice-text);
+    background:var(--e-accent); border:0; }
+  :root[data-skin="editorial"] #input-toggle-arrow{ color:var(--e-on-strong); opacity:.5; }
+
+  /* character tabs */
+  :root[data-skin="editorial"] .char-tab{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:11px; letter-spacing:.1em;
+    color:var(--e-on-strong); opacity:.62; background:transparent;
+    border:1px solid var(--e-hair-strong); border-radius:3px; padding:10px 16px; }
+  :root[data-skin="editorial"] .char-tab:hover{ opacity:1; border-color:var(--e-accent); color:var(--e-on-strong); }
+  :root[data-skin="editorial"] .char-tab.active{
+    opacity:1; color:var(--e-dice-text); background:var(--e-accent); border-color:var(--e-accent); }
+
+  /* free-text composer */
+  :root[data-skin="editorial"] #player-input-text{
+    background:color-mix(in srgb, var(--e-strong), #000 22%); color:var(--e-on-strong);
+    border:1px solid var(--e-hair-strong); border-radius:2px;
+    font-family:'Newsreader',serif; font-size:14px; }
+  :root[data-skin="editorial"] #player-input-text:focus{ border-color:var(--e-accent); }
+  :root[data-skin="editorial"] #player-input-text::placeholder{ color:var(--e-on-strong); opacity:.4; }
+
+  /* footer buttons */
+  :root[data-skin="editorial"] #stage-btn{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:13px; letter-spacing:.14em;
+    color:var(--e-dice-text); background:var(--e-accent);
+    border:1px solid var(--e-accent); border-radius:3px; padding:13px 32px; }
+  /* in the TV drawer give Stage real presence */
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel #stage-btn{ font-size:15px; padding:16px 40px; }
+  :root[data-skin="editorial"] #stage-btn:hover{ background:var(--e-accent-ink); border-color:var(--e-accent-ink); color:var(--e-dice-text); }
+  :root[data-skin="editorial"] #skip-turn-btn{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:9px; letter-spacing:.12em;
+    color:var(--e-on-strong); opacity:.7; background:transparent;
+    border:1px dashed var(--e-hair-strong); border-radius:2px; }
+  :root[data-skin="editorial"] #skip-turn-btn:hover{ opacity:1; border-color:var(--e-accent); color:var(--e-accent); }
+
+  /* staged queue */
+  :root[data-skin="editorial"] .staged-entry{
+    background:color-mix(in srgb, var(--e-strong), #000 14%);
+    border-left:3px solid var(--e-accent); border-radius:0 2px 2px 0; }
+  :root[data-skin="editorial"] .staged-entry.is-ready{ border-left-color:var(--e-accent-ink); }
+  :root[data-skin="editorial"] .staged-char{ font-family:'Syne',sans-serif; font-weight:700; color:var(--e-accent); }
+  :root[data-skin="editorial"] .staged-text{ font-family:'Newsreader',serif; color:var(--e-on-strong); opacity:.85; }
+  :root[data-skin="editorial"] .ready-btn{
+    font-family:'Syne',sans-serif; font-weight:700; color:var(--e-on-strong); opacity:.7;
+    background:transparent; border:1px solid var(--e-hair-strong); border-radius:2px; }
+  :root[data-skin="editorial"] .ready-btn:hover{ opacity:1; border-color:var(--e-accent); }
+
+  /* ── dice pad (phone roll surface) ── */
+  :root[data-skin="editorial"] body.input-only #dice-pad{
+    border-top:1px solid var(--e-hair-strong); background:color-mix(in srgb, var(--e-strong), #000 10%); }
+  :root[data-skin="editorial"] #dice-pad .dp-die,
+  :root[data-skin="editorial"] #dice-pad .dp-adv,
+  :root[data-skin="editorial"] #dice-pad .dp-mod{
+    background:color-mix(in srgb, var(--e-strong), #000 22%); color:var(--e-on-strong);
+    border:1px solid var(--e-hair-strong); border-radius:3px;
+    font-family:'Syne',sans-serif; font-weight:700; }
+  :root[data-skin="editorial"] #dice-pad .dp-die.active,
+  :root[data-skin="editorial"] #dice-pad .dp-adv.active{
+    background:var(--e-accent); border-color:var(--e-accent); color:var(--e-dice-text); }
+  :root[data-skin="editorial"] #dice-pad #dp-mod-val{ font-family:'Syne',sans-serif; color:var(--e-on-strong); }
+  :root[data-skin="editorial"] #dp-hint{ font-family:'Syne',sans-serif; color:var(--e-on-strong); opacity:.6; letter-spacing:.08em; }
+  :root[data-skin="editorial"] #dice-pad #dp-label,
+  :root[data-skin="editorial"] #dice-pad #dp-name{
+    background:color-mix(in srgb, var(--e-strong), #000 22%); color:var(--e-on-strong);
+    border:1px solid var(--e-hair-strong); border-radius:2px; font-family:'Newsreader',serif; }
+  :root[data-skin="editorial"] #dice-pad #dp-label::placeholder{ color:var(--e-on-strong); opacity:.4; }
+  :root[data-skin="editorial"] #dice-pad #dp-roll{
+    background:var(--e-accent); color:var(--e-dice-text);
+    border:1px solid var(--e-accent); border-radius:3px;
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.1em; }
+  :root[data-skin="editorial"] #dp-reel-wrap{
+    background:var(--e-strong); border:1px solid var(--e-hair-strong); border-radius:4px; box-shadow:none; }
+  :root[data-skin="editorial"] #dp-reel{ font-family:'Syne',sans-serif; font-weight:800; color:var(--e-accent); text-shadow:none; }
+  :root[data-skin="editorial"] #dp-result-line{ font-family:'Syne',sans-serif; color:var(--e-on-strong); opacity:.75; }
+  :root[data-skin="editorial"] #dp-result-line .total{ color:var(--e-accent); opacity:1; }
+
+  /* phone tab bar = strong chrome, accent active underline */
+  :root[data-skin="editorial"] body.input-only #dp-tabs{
+    background:var(--e-strong); border-bottom:1px solid var(--e-hair-strong); }
+  :root[data-skin="editorial"] body.input-only .dp-tab{
+    color:var(--e-on-strong); opacity:.6;
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.14em;
+    border-bottom:2px solid transparent; }
+  :root[data-skin="editorial"] body.input-only .dp-tab.active{
+    color:var(--e-accent); opacity:1; background:transparent; border-bottom-color:var(--e-accent); }
+  :root[data-skin="editorial"] body.input-only .dp-tab:active{ background:color-mix(in srgb, var(--e-strong), #000 14%); }
+
+  /* ══ Layer 3: right-edge rail + sliding drawers (editorial, TV view only) ══ */
+  :root[data-skin="editorial"]{ --ed-drawer-w: min(400px, 92vw); }
+
+  /* Off in vellum: rail is layout-neutral (its fixed children keep their own
+     placement), launchers + scrim hidden. */
+  #ed-rail{ display:contents; }
+  #ed-scrim{ display:none; }
+  .ed-launch{ display:none; }
+
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail{
+    display:flex; flex-direction:column; gap:10px;
+    position:fixed; top:auto; bottom:28px; right:0; transform:none;
+    z-index:36; padding:8px;
+    transition:right .32s cubic-bezier(.4,0,.1,1); }
+  :root[data-skin="editorial"] body:not(.input-only).ed-drawer-open #ed-rail{ right:var(--ed-drawer-w); }
+
+  /* uniform rail buttons (new launchers + adopted action buttons) */
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail .ed-launch,
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #dm-help-btn,
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn{
+    position:static !important; inset:auto !important; opacity:1 !important;
+    display:flex !important; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    width:76px; min-height:64px; box-sizing:border-box; padding:9px 6px;
+    background:var(--e-strong); color:var(--e-on-strong);
+    border:1px solid var(--e-hair-strong); border-radius:5px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:9px; letter-spacing:.1em; text-transform:uppercase;
+    line-height:1.2; text-align:center; cursor:pointer; box-shadow:none;
+    transition:background .15s, color .15s, border-color .15s; }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail .ed-launch:hover,
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #dm-help-btn:hover{
+    border-color:var(--e-accent); color:var(--e-accent); background:var(--e-strong); }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail .ed-launch.active{
+    background:var(--e-accent); color:var(--e-dice-text); border-color:var(--e-accent); }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail .ed-ic{ font-size:19px; line-height:1; }
+  /* phone-mode = prominent, always-accent, larger tap target */
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn{
+    background:var(--e-accent); color:var(--e-dice-text); border-color:var(--e-accent); min-height:78px; gap:6px; }
+  /* phone handset glyph — small in Vellum's chip, prominent in the editorial rail */
+  #phone-mode-btn .ed-ic svg{ width:15px; height:15px; vertical-align:middle; display:inline-block; }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn .ed-ic{ font-size:0; line-height:0; }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn .ed-ic svg{ width:28px; height:28px; }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn:hover{
+    background:var(--e-accent-ink); color:var(--e-dice-text); border-color:var(--e-accent-ink); }
+
+  /* scrim */
+  :root[data-skin="editorial"] body:not(.input-only) #ed-scrim{ position:fixed; inset:0; z-index:29; background:rgba(0,0,0,.2); display:none; }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-scrim.on{ display:block; }
+
+  /* PARTY INPUT drawer — override layer-2 bottom-center placement on the TV */
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel{
+    top:0; bottom:0; left:auto; right:0; transform:translateX(102%);
+    width:var(--ed-drawer-w); height:100vh; max-height:100vh;
+    border:0; border-left:1px solid var(--e-hair-strong); border-radius:0;
+    display:flex; flex-direction:column; z-index:32; backdrop-filter:none;
+    box-shadow:-2px 0 50px rgba(0,0,0,.4);
+    transition:transform .32s cubic-bezier(.4,0,.1,1); }
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel.ed-open{ transform:translateX(0); }
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel #input-body{
+    display:flex !important; flex:1 1 auto; overflow-y:auto; padding:14px 18px 20px; }
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel #input-panel-header{
+    padding:18px 18px 13px; border-bottom:1px solid var(--e-hair-strong); cursor:default; }
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel #input-panel-label{ font-size:11px; letter-spacing:.28em; }
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel #input-toggle-arrow{ display:none; }
+
+  /* SETTINGS drawer (audio-controls) */
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls{
+    top:0; bottom:0; right:0; left:auto; transform:translateX(102%);
+    width:var(--ed-drawer-w); height:100vh; z-index:32;
+    display:flex; flex-direction:column; gap:0; padding:0;
+    background:var(--e-strong); color:var(--e-on-strong);
+    border-left:1px solid var(--e-hair-strong); box-shadow:-2px 0 50px rgba(0,0,0,.4);
+    transition:transform .32s cubic-bezier(.4,0,.1,1); }
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls.ed-open{ transform:translateX(0); }
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls::before{
+    content:"Settings"; display:block; padding:18px 18px 13px;
+    font-family:'Syne',sans-serif; font-weight:800; font-size:11px; letter-spacing:.28em; color:var(--e-accent);
+    border-bottom:1px solid var(--e-hair-strong); }
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls .audio-row{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:16px 18px; border-bottom:1px solid var(--e-hair-strong); cursor:pointer; }
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls .audio-label{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--e-on-strong); opacity:.75; }
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls .theme-label,
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls .speed-label,
+  :root[data-skin="editorial"] body:not(.input-only) #audio-controls .narrate-label{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:11px; letter-spacing:.06em; color:var(--e-accent); text-transform:uppercase; }
+
+  /* phone-mode character menu, repositioned beside the rail */
+  :root[data-skin="editorial"] body:not(.input-only) #phone-mode-menu{
+    top:auto; bottom:24px; right:100px; left:auto;
+    background:var(--e-strong); border:1px solid var(--e-hair-strong); border-radius:6px; box-shadow:-2px 0 40px rgba(0,0,0,.45); }
+  :root[data-skin="editorial"] body:not(.input-only) #phone-mode-menu .pm-header{ font-family:'Syne',sans-serif; color:var(--e-accent); }
+  :root[data-skin="editorial"] body:not(.input-only) #phone-mode-menu .pm-opt{ font-family:'Newsreader',serif; color:var(--e-on-strong); }
+  :root[data-skin="editorial"] body:not(.input-only) #phone-mode-menu .pm-opt:hover{ background:color-mix(in srgb,var(--e-strong),#000 18%); color:var(--e-accent); }
+
+  /* ══ Layer 4: party rail fill + logo, dice readability, modals, composer sizing ══ */
+
+  /* B1 — party rail fills full height; the d20 logo nests in its top */
+  :root[data-skin="editorial"] body:not(.input-only) #sidebar{
+    top:0; bottom:0; height:100vh; padding-top:108px; padding-bottom:30px; }
+  :root[data-skin="editorial"] body:not(.input-only) #corner-logo{
+    top:26px; left:30px; width:60px; height:60px; opacity:.95; z-index:33; }
+
+  /* B2 — dice call-out: looser leading + lighter weight so wrapped rolls read clearly */
+  :root[data-skin="editorial"] .dice-result{ font-weight:600; line-height:2.05; letter-spacing:.05em; padding:1.05em 1.4em; }
+
+  /* D1 — phone "Full Display" return button, themed + tappable */
+  :root[data-skin="editorial"] body.input-only #full-mode-btn{
+    background:var(--e-strong); color:var(--e-on-strong);
+    border:1px solid var(--e-hair-strong); border-left:3px solid var(--e-accent); border-radius:7px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    opacity:1; padding:11px 16px; min-height:40px; }
+
+  /* D2 — phone composer keeps comfortable padding at any font size */
+  :root[data-skin="editorial"] body.input-only #player-input-text{
+    padding:16px !important; box-sizing:border-box; }
+
+  /* E — character sheet modal themed (was vellum parchment) */
+  :root[data-skin="editorial"] #sheet-modal{ background:rgba(0,0,0,.55); }
+  :root[data-skin="editorial"] #sheet-panel{
+    background:var(--e-canvas); color:var(--e-ink);
+    border:1px solid var(--e-hair-strong); border-radius:4px;
+    box-shadow:0 30px 90px rgba(0,0,0,.5); }
+  :root[data-skin="editorial"] #sheet-panel .sm-name{
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.16em; color:var(--e-accent); }
+  :root[data-skin="editorial"] #sheet-panel .sm-stat-label,
+  :root[data-skin="editorial"] #sheet-panel .sm-label{
+    font-family:'Syne',sans-serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #sheet-panel .sm-stat-val,
+  :root[data-skin="editorial"] #sheet-panel .sm-value{ font-family:'Syne',sans-serif; color:var(--e-ink); }
+  :root[data-skin="editorial"] #sheet-panel,
+  :root[data-skin="editorial"] #sheet-panel p,
+  :root[data-skin="editorial"] #sheet-panel li,
+  :root[data-skin="editorial"] #sheet-panel td,
+  :root[data-skin="editorial"] #sheet-panel th{ font-family:'Newsreader',serif; color:var(--e-ink); }
+  :root[data-skin="editorial"] #sheet-panel strong{ color:var(--e-accent-ink); }
+  :root[data-skin="editorial"] #sheet-close{ color:var(--e-mut); }
+  :root[data-skin="editorial"] #sheet-close:hover{ color:var(--e-accent); }
+
+  /* F — Party Input drawer composer fills the abundant vertical space */
+  :root[data-skin="editorial"] body:not(.input-only) #input-panel #player-input-text{
+    min-height:240px; padding:18px; font-size:16px; line-height:1.5; }
+
+  /* SRD lookup modal themed (mirrors the sheet modal) */
+  :root[data-skin="editorial"] #srd-modal{ background:rgba(0,0,0,.55); }
+  :root[data-skin="editorial"] #srd-panel{
+    background:var(--e-canvas); color:var(--e-ink);
+    border:1px solid var(--e-hair-strong); border-radius:4px;
+    box-shadow:0 30px 90px rgba(0,0,0,.5); }
+  :root[data-skin="editorial"] #srd-category-badge{
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.28em; color:var(--e-accent); }
+  :root[data-skin="editorial"] #srd-body{ font-family:'Newsreader',serif; color:var(--e-ink); }
+  :root[data-skin="editorial"] #srd-body .srd-title{
+    font-family:'Syne',sans-serif; font-weight:800; letter-spacing:.06em; color:var(--e-ink); }
+  :root[data-skin="editorial"] #srd-body .srd-meta{ font-family:'Newsreader',serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-body strong{ color:var(--e-accent-ink); }
+  :root[data-skin="editorial"] #srd-loading{ font-family:'Syne',sans-serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-not-found{ font-family:'Newsreader',serif; color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-close{ color:var(--e-mut); }
+  :root[data-skin="editorial"] #srd-close:hover{ color:var(--e-accent); }
+
+  /* Party rail — Factions / Quests ("DM notes"). Headers/names re-typed to the
+     editorial system; the semantic standing/status colors are left intact. */
+  :root[data-skin="editorial"] body:not(.input-only) #sb-factions,
+  :root[data-skin="editorial"] body:not(.input-only) #sb-quests{
+    border-top:1px solid var(--e-hair-strong); margin-top:16px; padding-top:14px; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-factions-header,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quests-header{
+    font-family:'Syne',sans-serif; font-weight:800; font-size:9px; letter-spacing:.24em; text-transform:uppercase;
+    color:var(--e-accent); opacity:1; margin-bottom:9px; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-faction-item,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quest-item{ padding:4px 0; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-faction-name,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quest-name{
+    font-family:'Newsreader',serif; font-size:13px; color:var(--e-on-strong); opacity:.82; }
+  :root[data-skin="editorial"] body:not(.input-only) .sb-faction-standing,
+  :root[data-skin="editorial"] body:not(.input-only) .sb-quest-status{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:8.5px; letter-spacing:.1em; }
+
+  /* ══ Phone display-settings popover (#phone-settings) — both skins, phone only ══ */
+  #phone-settings{ display:none; }
+  body.input-only #phone-settings{
+    display:block; position:fixed; z-index:60;
+    top:calc(env(safe-area-inset-top) + 8px); right:calc(env(safe-area-inset-right) + 10px); }
+  #ph-set-toggle{
+    width:42px; height:42px; border-radius:9px; background:rgba(0,0,0,.5); color:#ECE4D2;
+    border:1px solid rgba(255,255,255,.2); font-size:18px; line-height:1; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  #ph-set-menu{
+    display:none; position:absolute; top:50px; right:0; min-width:190px;
+    background:rgba(14,12,10,.98); border:1px solid rgba(255,255,255,.16); border-radius:11px;
+    overflow:hidden; box-shadow:0 14px 44px rgba(0,0,0,.6); }
+  #ph-set-menu.open{ display:block; }
+  .ph-set-opt{
+    display:flex; align-items:center; justify-content:space-between; gap:18px; width:100%;
+    background:none; border:0; border-bottom:1px solid rgba(255,255,255,.08);
+    color:#CFC7B5; font-family:'Syne',sans-serif; font-weight:700; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    padding:15px 16px; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+  .ph-set-opt:last-child{ border-bottom:0; }
+  .ph-set-opt strong{ color:#FF7A2D; font-weight:800; font-size:12px; }
+  .ph-set-opt:active{ background:rgba(255,255,255,.06); }
+
+  /* ══ Phone character-select first screen (#char-select) — theme-aware via
+        editorial vars with dark fallbacks (works in Vellum too) ══ */
+  #char-select{ display:none; }
+  body.input-only #char-select:not([hidden]){
+    display:flex; position:fixed; inset:0; z-index:70;
+    align-items:center; justify-content:center; padding:24px;
+    background:var(--e-canvas, #14110C); }
+  #cs-card{ width:100%; max-width:440px; display:flex; flex-direction:column; gap:6px; }
+  #cs-kicker{ font-family:'Syne',sans-serif; font-weight:800; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--e-accent, #FF7A2D); }
+  #cs-title{ font-family:'Newsreader',serif; font-style:italic; font-size:30px; line-height:1.1; color:var(--e-ink, #F3EFE4); margin-bottom:18px; }
+  #cs-list{ display:flex; flex-direction:column; gap:10px; }
+  .cs-opt{
+    display:block; width:100%; text-align:left; cursor:pointer;
+    background:var(--e-strong, #221C16); color:var(--e-on-strong, #EDE6D6);
+    border:1px solid var(--e-hair-strong, rgba(237,230,214,.16)); border-radius:6px;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:17px; letter-spacing:.02em;
+    padding:18px 20px; -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+    transition:background .12s, border-color .12s; }
+  .cs-opt:active{ background:var(--e-accent, #FF7A2D); color:var(--e-dice-text, #14110C); border-color:var(--e-accent, #FF7A2D); }
+  .cs-empty{ font-family:'Newsreader',serif; font-style:italic; color:var(--e-mut, rgba(237,230,214,.5)); padding:8px 2px; }
+  #cs-foot{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:20px; }
+  #cs-skip, #cs-back{
+    background:none; border:0; cursor:pointer;
+    font-family:'Syne',sans-serif; font-weight:700; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--e-mut, rgba(237,230,214,.5)); padding:10px 2px; -webkit-tap-highlight-color:transparent; }
+  #cs-back{ color:var(--e-accent, #FF7A2D); }
+  #cs-skip:active, #cs-back:active{ opacity:.6; }
+
+  /* ══ Toast ══ */
+  #toast{
+    position:fixed; left:50%; bottom:36px;
+    transform:translateX(-50%) translateY(20px);
+    z-index:200; max-width:min(440px, 86vw);
+    background:var(--e-strong, rgba(14,12,10,.98)); color:var(--e-on-strong, #ECE4D2);
+    border:1px solid var(--e-hair-strong, rgba(255,255,255,.16)); border-left:3px solid var(--e-accent, #FF7A2D);
+    border-radius:7px; box-shadow:0 14px 44px rgba(0,0,0,.5);
+    font-family:'Syne',sans-serif; font-weight:600; font-size:13px; letter-spacing:.02em;
+    padding:13px 18px; opacity:0; pointer-events:none;
+    transition:opacity .22s ease, transform .22s ease; }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -2931,10 +3368,52 @@
     <span class="audio-label">Theme</span>
     <span id="theme-label" class="theme-label">Dark</span>
   </div>
+  <div class="audio-row" id="skin-row" title="Display style — Vellum (classic) / Editorial (new)">
+    <span class="audio-label">Style</span>
+    <span id="skin-label" class="theme-label">Vellum</span>
+  </div>
 </div>
 
 <!-- DM Help — on-demand hint button -->
 <button id="dm-help-btn" title="Request a DM hint for the current scene">◈ DM Help</button>
+
+<!-- Editorial right-edge rail + drawer scrim (shown only under data-skin="editorial" on the TV view).
+     #dm-help-btn and #phone-mode-btn are adopted into the rail at load; they are position:fixed,
+     so Vellum (rail = display:contents) keeps their original placement untouched. -->
+<div id="ed-scrim"></div>
+<div id="ed-rail" aria-label="Display controls">
+  <button class="ed-launch" id="ed-launch-input" type="button" data-drawer="input-panel" title="Party input">
+    <span class="ed-ic">✎</span><span>Party</span>
+  </button>
+  <button class="ed-launch" id="ed-launch-settings" type="button" data-drawer="audio-controls" title="Display settings">
+    <span class="ed-ic">⚙</span><span>Settings</span>
+  </button>
+</div>
+
+<!-- Phone first-screen: pick which character this device controls (shown when input
+     view is opened without a ?char= binding, e.g. via the Phone Mode button). -->
+<div id="char-select" hidden>
+  <div id="cs-card">
+    <div id="cs-kicker">Phone Controller</div>
+    <div id="cs-title">Who are you playing?</div>
+    <div id="cs-list"><div class="cs-empty">Loading party…</div></div>
+    <div id="cs-foot">
+      <button id="cs-back" type="button">← Back to display</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transient toast (DM Help status, etc.) -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Phone-only display-settings popover — lets each phone pick its own Theme / Style -->
+<div id="phone-settings">
+  <button id="ph-set-toggle" type="button" title="Display settings" aria-label="Display settings">⚙</button>
+  <div id="ph-set-menu" role="menu">
+    <button class="ph-set-opt" id="ph-theme-opt" type="button"><span>Theme</span><strong id="ph-theme-val">Dark</strong></button>
+    <button class="ph-set-opt" id="ph-skin-opt" type="button"><span>Style</span><strong id="ph-skin-val">Vellum</strong></button>
+  </div>
+</div>
 
 <!-- Device approval cards — shown when a new LAN device requests input access -->
 <div id="device-approvals"></div>
@@ -4186,6 +4665,7 @@ function renderTutorBlock(text, isReplay) {
 
   // Reset DM Help button — hint arrived, execution complete
   clearTimeout(_helpResetTimer);
+  if (_helpPending && !isReplay) _showToast('DM hint ready ↓');
   _dmHelpReset();
 }
 
@@ -5306,12 +5786,24 @@ function _dmHelpReset() {
   _dmHelpBtn.textContent = '◈ DM Help';
 }
 
+// Transient toast (status messages). Auto-dismisses; call again to replace.
+let _toastTimer = null;
+function _showToast(msg, ms) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), ms || 3200);
+}
+
 _dmHelpBtn.addEventListener('click', async () => {
   if (_helpPending) return;
   _helpPending = true;
   _dmHelpBtn.disabled = true;
   _dmHelpBtn.classList.add('pending');
   _dmHelpBtn.textContent = '◈ Thinking…';
+  _showToast('DM Help requested — thinking…');
 
   try {
     const res = await fetch('/help-request', {
@@ -5323,6 +5815,7 @@ _dmHelpBtn.addEventListener('click', async () => {
       _dmHelpBtn.classList.remove('pending');
       _dmHelpBtn.classList.add('locked');
       _dmHelpBtn.textContent = '◈ Running…';
+      _showToast('A hint is already on the way…');
       // Auto-reset when the tutor block arrives (see renderTutorBlock)
       // Safety timeout in case it never arrives
       clearTimeout(_helpResetTimer);
@@ -5333,9 +5826,11 @@ _dmHelpBtn.addEventListener('click', async () => {
       clearTimeout(_helpResetTimer);
       _helpResetTimer = setTimeout(_dmHelpReset, 20000);
     } else {
+      _showToast('DM Help isn’t available right now');
       _dmHelpReset();
     }
   } catch (_) {
+    _showToast('Couldn’t reach the server for DM Help');
     _dmHelpReset();
   }
 });
@@ -5734,6 +6229,27 @@ function _effectiveTheme(theme) {
     _applyTheme(current);
     refresh();
   });
+
+  // ── Skin picker (Vellum ↔ Editorial) — parallel axis to theme ──
+  (function _initSkinPicker() {
+    const srow = document.getElementById('skin-row');
+    const slabel = document.getElementById('skin-label');
+    if (!srow || !slabel) return;
+    let skin = 'vellum';
+    try { if (localStorage.getItem('dnd-skin') === 'editorial') skin = 'editorial'; } catch (_) {}
+    function applySkin() {
+      if (skin === 'editorial') document.documentElement.setAttribute('data-skin', 'editorial');
+      else document.documentElement.removeAttribute('data-skin');
+      slabel.textContent = skin === 'editorial' ? 'Editorial' : 'Vellum';
+      slabel.classList.toggle('on', skin === 'editorial');
+    }
+    applySkin();
+    srow.addEventListener('click', () => {
+      skin = (skin === 'editorial') ? 'vellum' : 'editorial';
+      try { localStorage.setItem('dnd-skin', skin); } catch (_) {}
+      applySkin();
+    });
+  })();
 
   // Track system-pref changes so auto mode stays accurate without reload
   try {
@@ -6411,9 +6927,93 @@ connect();
     if (ip) ip.classList.remove('collapsed');
     _initInputTabs();
     _initDicePad();
+    // No character bound yet → show the first-screen picker (Phone Mode flow).
+    if (!_qp.has('char') && !_qp.has('character')) _initCharSelect();
   }
   _initModeSwitcher(_inputMode);
 }
+
+// ── Editorial right-rail drawers (TV view) + phone settings popover ──────────
+(function _initEditorialChrome() {
+  const rail  = document.getElementById('ed-rail');
+  const scrim = document.getElementById('ed-scrim');
+  if (rail && scrim) {
+    // Adopt the existing fixed-position action buttons into the rail. Because
+    // they are position:fixed, Vellum (#ed-rail: display:contents) leaves them
+    // exactly where they were; Editorial lays them out as a vertical column.
+    ['dm-help-btn', 'phone-mode-btn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.parentElement !== rail) rail.appendChild(el);
+    });
+    // Give Phone Mode an icon-forward layout (big phone glyph + label). The space
+    // between spans keeps Vellum's inline "📱 Phone Mode" reading intact.
+    const _pm = document.getElementById('phone-mode-btn');
+    if (_pm) _pm.innerHTML =
+      '<span class="ed-ic" aria-hidden="true">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />' +
+      '</svg>' +
+      '</span> <span class="ed-lbl">Phone</span>';
+    const launchers = Array.from(rail.querySelectorAll('.ed-launch'));
+    const drawerIds = ['input-panel', 'audio-controls'];
+
+    function closeAll() {
+      drawerIds.forEach(id => {
+        const d = document.getElementById(id);
+        if (d) d.classList.remove('ed-open');
+      });
+      launchers.forEach(b => b.classList.remove('active'));
+      document.body.classList.remove('ed-drawer-open');
+      scrim.classList.remove('on');
+    }
+    function toggle(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const willOpen = !el.classList.contains('ed-open');
+      closeAll();
+      if (willOpen) {
+        if (id === 'input-panel') el.classList.remove('collapsed');
+        el.classList.add('ed-open');
+        const b = rail.querySelector('.ed-launch[data-drawer="' + id + '"]');
+        if (b) b.classList.add('active');
+        document.body.classList.add('ed-drawer-open');
+        scrim.classList.add('on');
+      }
+    }
+    launchers.forEach(b => b.addEventListener('click', e => {
+      e.stopPropagation();
+      toggle(b.dataset.drawer);
+    }));
+    scrim.addEventListener('click', closeAll);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+  }
+
+  // Phone-only display settings — reuse the hidden Theme / Style pickers so each
+  // phone chooses its own look (their click handlers fire even while display:none).
+  (function _initPhoneSettings() {
+    const wrap = document.getElementById('phone-settings');
+    if (!wrap || !document.body.classList.contains('input-only')) return;
+    const tog    = document.getElementById('ph-set-toggle');
+    const menu   = document.getElementById('ph-set-menu');
+    const tVal   = document.getElementById('ph-theme-val');
+    const sVal   = document.getElementById('ph-skin-val');
+    const tRow   = document.getElementById('theme-row');
+    const sRow   = document.getElementById('skin-row');
+    const tLabel = document.getElementById('theme-label');
+    const sLabel = document.getElementById('skin-label');
+    function refresh() {
+      if (tLabel && tVal) tVal.textContent = tLabel.textContent;
+      if (sLabel && sVal) sVal.textContent = sLabel.textContent;
+    }
+    refresh();
+    if (tog) tog.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+    const tOpt = document.getElementById('ph-theme-opt');
+    const sOpt = document.getElementById('ph-skin-opt');
+    if (tOpt) tOpt.addEventListener('click', e => { e.stopPropagation(); if (tRow) tRow.click(); refresh(); });
+    if (sOpt) sOpt.addEventListener('click', e => { e.stopPropagation(); if (sRow) sRow.click(); refresh(); });
+    document.addEventListener('click', () => menu.classList.remove('open'));
+  })();
+})();
 
 // ── Mode switcher ─────────────────────────────────────────────────────────
 // Two entry points to save players from typing the input URL by hand:
@@ -6425,7 +7025,7 @@ connect();
 //     the phone without losing the binding next reload).
 // Pure client-side. No server changes needed; the dropdown reads the
 // players array that already arrives via the existing /stream SSE.
-let _modePlayersCache = [];
+var _modePlayersCache = [];   // var (hoisted) so the first-screen picker can read it pre-init
 
 function _modeSwitcherCachePlayers(players) {
   const names = (players || [])
@@ -6438,6 +7038,47 @@ function _modeSwitcherCachePlayers(players) {
     if (seen.has(k)) return false;
     seen.add(k);
     return true;
+  });
+  _refreshCharSelect();   // keep the phone first-screen picker in sync with SSE
+}
+
+// ── Phone first-screen character picker (#char-select) ──────────────────────
+// Shown when the input view is opened without a ?char= binding (e.g. via the
+// "Phone Mode" button). Selecting a name reloads bound to that character.
+function _refreshCharSelect() {
+  const list = document.getElementById('cs-list');
+  if (!list) return;
+  const names = _modePlayersCache || [];
+  if (!names.length) {
+    list.innerHTML = '<div class="cs-empty">Loading party…</div>';
+    return;
+  }
+  list.innerHTML = '';
+  names.forEach(name => {
+    const b = document.createElement('button');
+    b.className = 'cs-opt';
+    b.type = 'button';
+    b.textContent = name;
+    b.addEventListener('click', () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', 'input');
+      url.searchParams.set('char', name);
+      window.location.href = url.toString();
+    });
+    list.appendChild(b);
+  });
+}
+
+function _initCharSelect() {
+  const cs = document.getElementById('char-select');
+  if (!cs) return;
+  cs.hidden = false;
+  _refreshCharSelect();
+  const back = document.getElementById('cs-back');
+  if (back) back.addEventListener('click', () => {
+    const url = new URL(window.location.href);
+    ['view', 'char', 'character'].forEach(k => url.searchParams.delete(k));
+    window.location.href = url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '');
   });
 }
 
@@ -6460,65 +7101,21 @@ function _initModeSwitcher(inputMode) {
     return;
   }
 
-  // Full-view: "Phone Mode" button + lazy character-picker dropdown
+  // Full-view: "Phone Mode" converts THIS device into a phone input controller.
+  // Tapping navigates straight to the input view; the player then picks their
+  // character on the first screen there (see #char-select / _initCharSelect).
   const btn = document.createElement('button');
   btn.id = 'phone-mode-btn';
   btn.type = 'button';
-  btn.title = 'Switch this device to phone input mode for a character';
+  btn.title = 'Use this device as a phone input controller';
   btn.textContent = '📱 Phone Mode';
-
-  const menu = document.createElement('div');
-  menu.id = 'phone-mode-menu';
-  menu.setAttribute('role', 'menu');
-
-  function _rebuildMenu() {
-    menu.innerHTML = '';
-    const hdr = document.createElement('div');
-    hdr.className = 'pm-header';
-    hdr.textContent = 'Bind this device to…';
-    menu.appendChild(hdr);
-
-    if (_modePlayersCache.length === 0) {
-      const empty = document.createElement('div');
-      empty.className = 'pm-empty';
-      empty.textContent = 'No characters loaded yet';
-      menu.appendChild(empty);
-      return;
-    }
-
-    _modePlayersCache.forEach(name => {
-      const opt = document.createElement('button');
-      opt.className = 'pm-opt';
-      opt.type = 'button';
-      opt.textContent = _escHtml(name);  // safety: textContent already escapes, but keep symmetry
-      opt.addEventListener('click', e => {
-        e.stopPropagation();
-        const url = new URL(window.location.href);
-        url.searchParams.set('view', 'input');
-        url.searchParams.set('char', name);
-        window.location.href = url.toString();
-      });
-      menu.appendChild(opt);
-    });
-  }
-
   btn.addEventListener('click', e => {
     e.stopPropagation();
-    if (menu.classList.contains('open')) {
-      menu.classList.remove('open');
-    } else {
-      _rebuildMenu();
-      menu.classList.add('open');
-    }
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', 'input');
+    window.location.href = url.toString();
   });
-
-  // Close the menu on any outside click
-  document.addEventListener('click', () => {
-    menu.classList.remove('open');
-  }, { passive: true });
-
   document.body.appendChild(btn);
-  document.body.appendChild(menu);
 }
 
 // ── Move / Roll tab switcher (input-only mode only) ──────────────────────
