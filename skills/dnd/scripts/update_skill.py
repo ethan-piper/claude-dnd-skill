@@ -20,8 +20,16 @@ import os
 import pathlib
 import subprocess
 import sys
+import urllib.request
 
 from paths import skill_root as _skill_root
+
+# Canonical VERSION on the published marketplace branch — used to tell a plugin
+# install whether it's behind. 404s gracefully before the org transfer lands.
+# Override with DND_UPDATE_VERSION_URL (e.g. to test, or track a fork).
+_REMOTE_VERSION_URL = os.environ.get("DND_UPDATE_VERSION_URL", "").strip() or (
+    "https://raw.githubusercontent.com/neuralinitiative/claude-dnd-skill/main/VERSION"
+)
 
 # The skill dir holds SKILL.md + scripts/data/display. The git checkout root is
 # the repo root: skill dir is <repo>/skills/dnd, so the repo is two levels up.
@@ -70,6 +78,51 @@ def _read_remote_version(branch: str) -> str:
         return "(unreadable)"
 
 
+# ── Plugin-install version awareness ──────────────────────────────────────
+# In a plugin install the VERSION file sits at the plugin/repo root, not inside
+# skills/dnd, and there's no git checkout to diff. Resolve the local version
+# from the plugin root and compare it against the published marketplace VERSION.
+
+def _plugin_local_version() -> str:
+    candidates = []
+    env = os.environ.get("CLAUDE_PLUGIN_ROOT", "").strip()
+    if env:
+        candidates.append(pathlib.Path(env).expanduser() / "VERSION")
+    candidates.append(SKILL_DIR.parent.parent / "VERSION")  # skills/dnd → plugin root
+    candidates.append(SKILL_DIR / "VERSION")
+    for c in candidates:
+        try:
+            if c.exists():
+                return c.read_text().strip()
+        except OSError:
+            pass
+    return "unknown"
+
+
+def _fetch_remote_version(timeout: float = 4.0):
+    """Latest published VERSION, or None if unreachable (offline / not yet published)."""
+    try:
+        with urllib.request.urlopen(_REMOTE_VERSION_URL, timeout=timeout) as resp:
+            return resp.read().decode("utf-8", "replace").strip()
+    except Exception:
+        return None
+
+
+def _ver_tuple(v: str):
+    out = []
+    for part in v.split("."):
+        digits = "".join(ch for ch in part if ch.isdigit())
+        out.append(int(digits) if digits else 0)
+    return tuple(out)
+
+
+def _is_newer(remote: str, local: str) -> bool:
+    try:
+        return _ver_tuple(remote) > _ver_tuple(local)
+    except Exception:
+        return False
+
+
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--check", action="store_true", help="check only, do not pull")
@@ -77,10 +130,21 @@ def main() -> int:
     args = p.parse_args()
 
     if PLUGIN_MODE:
-        print("This is a Claude Code plugin install — update it with the plugin manager:")
-        print("    /plugin update dm")
-        print("\n(Manual git updates are managed by Claude Code here; `/dnd update` "
-              "defers to it to avoid conflicting with the plugin's tracked state.)")
+        local_ver = _plugin_local_version()
+        remote_ver = _fetch_remote_version()
+        print(f"D&D plugin (dm) — installed version {local_ver}.")
+        if remote_ver is None:
+            print("Couldn't reach the marketplace to check for a newer release "
+                  "(offline, or the repo isn't published there yet).")
+            print("Update any time with:  /plugin update dm")
+        elif _is_newer(remote_ver, local_ver):
+            print(f"⬆  Update available: {local_ver} → {remote_ver}")
+            print("   Update with:  /plugin update dm")
+            print("   Then /reload-plugins (or restart Claude Code) to load it.")
+        else:
+            print(f"✓  Up to date (latest published is {remote_ver}).")
+        print("\n(Plugin code is managed by Claude Code; `/dnd update` reports status "
+              "but defers the actual update to /plugin update.)")
         return 0
 
     if GIT_ROOT is None:
