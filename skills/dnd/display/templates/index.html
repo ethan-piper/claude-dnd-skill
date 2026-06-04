@@ -3106,7 +3106,8 @@
   :root[data-skin="editorial"] body:not(.input-only) #ed-rail .ed-ic{ font-size:19px; line-height:1; }
   /* phone-mode = prominent, always-accent, larger tap target */
   :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn{
-    background:var(--e-accent); color:var(--e-dice-text); border-color:var(--e-accent); min-height:76px; }
+    background:var(--e-accent); color:var(--e-dice-text); border-color:var(--e-accent); min-height:78px; gap:5px; }
+  :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn .ed-ic{ font-size:26px; }
   :root[data-skin="editorial"] body:not(.input-only) #ed-rail #phone-mode-btn:hover{
     background:var(--e-accent-ink); color:var(--e-dice-text); border-color:var(--e-accent-ink); }
 
@@ -3394,7 +3395,6 @@
     <div id="cs-title">Who are you playing?</div>
     <div id="cs-list"><div class="cs-empty">Loading party…</div></div>
     <div id="cs-foot">
-      <button id="cs-skip" type="button">Enter a name instead</button>
       <button id="cs-back" type="button">← Back to display</button>
     </div>
   </div>
@@ -6942,6 +6942,10 @@ connect();
       const el = document.getElementById(id);
       if (el && el.parentElement !== rail) rail.appendChild(el);
     });
+    // Give Phone Mode an icon-forward layout (big phone glyph + label). The space
+    // between spans keeps Vellum's inline "📱 Phone Mode" reading intact.
+    const _pm = document.getElementById('phone-mode-btn');
+    if (_pm) _pm.innerHTML = '<span class="ed-ic">📱</span> <span class="ed-lbl">Phone</span>';
     const launchers = Array.from(rail.querySelectorAll('.ed-launch'));
     const drawerIds = ['input-panel', 'audio-controls'];
 
@@ -7062,8 +7066,6 @@ function _initCharSelect() {
   if (!cs) return;
   cs.hidden = false;
   _refreshCharSelect();
-  const skip = document.getElementById('cs-skip');
-  if (skip) skip.addEventListener('click', () => { cs.hidden = true; });
   const back = document.getElementById('cs-back');
   if (back) back.addEventListener('click', () => {
     const url = new URL(window.location.href);
