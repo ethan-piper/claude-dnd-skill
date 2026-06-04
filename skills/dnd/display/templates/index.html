@@ -3170,8 +3170,8 @@
   :root[data-skin="editorial"] body:not(.input-only) #corner-logo{
     top:26px; left:30px; width:60px; height:60px; opacity:.95; z-index:33; }
 
-  /* B2 — dice call-out: readable line-height when it wraps */
-  :root[data-skin="editorial"] .dice-result{ line-height:1.85; padding:.85em 1.2em; }
+  /* B2 — dice call-out: looser leading + lighter weight so wrapped rolls read clearly */
+  :root[data-skin="editorial"] .dice-result{ font-weight:600; line-height:2.05; letter-spacing:.05em; padding:1.05em 1.4em; }
 
   /* D1 — phone "Full Display" return button, themed + tappable */
   :root[data-skin="editorial"] body.input-only #full-mode-btn{
@@ -6945,7 +6945,7 @@ connect();
     // Give Phone Mode an icon-forward layout (big phone glyph + label). The space
     // between spans keeps Vellum's inline "📱 Phone Mode" reading intact.
     const _pm = document.getElementById('phone-mode-btn');
-    if (_pm) _pm.innerHTML = '<span class="ed-ic">📱</span> <span class="ed-lbl">Phone</span>';
+    if (_pm) _pm.innerHTML = '<span class="ed-ic">☎️</span> <span class="ed-lbl">Phone</span>';
     const launchers = Array.from(rail.querySelectorAll('.ed-launch'));
     const drawerIds = ['input-panel', 'audio-controls'];
 
